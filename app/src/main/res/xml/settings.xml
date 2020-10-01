@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">>
+    <SwitchPreferenceCompat
+        android:id="@+id/switch_pref_location"
+        app:key="location"
+        app:title="Allow this app to access your location"/>
+    <SwitchPreferenceCompat
+        android:id="@+id/switch_pref_fine_location"
+        app:key="fine_location"
+        app:title="Allow this app to access your fine location"/>
+    <SwitchPreferenceCompat
+        android:id="@+id/switch_pref_camera"
+        app:key="camera"
+        app:title="Allow this app to access your camera"/>
+    <SwitchPreferenceCompat
+        android:id="@+id/switch_pref_storage"
+        app:key="storage"
+        app:title="Allow this app to access device storage"/>
+    <SwitchPreferenceCompat
+        android:id="@+id/switch_pref_collect_data"
+        app:key="collect_data"
+        app:title="Allow this app to collect data"/>
+    <SwitchPreferenceCompat
+        android:id="@+id/switch_pref_microphone"
+        app:key="microphone"
+        app:title="Allow this app to access your microphone"/>
+
+</PreferenceScreen>

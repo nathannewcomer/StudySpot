@@ -43,8 +43,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         super.onPause();
         Context context = requireActivity();
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
-        //TODO save preferences
-        //SharedPreferences.Editor editor = sharedPref.edit();
         Log.d(TAG, "onPause() called by" + TAG);
     }
     @Override

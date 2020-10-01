@@ -1,5 +1,7 @@
 package com.android.studyspot;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -7,6 +9,7 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import java.util.Arrays;
 
@@ -21,6 +24,7 @@ public class ListFragment extends Fragment {
 
 
     private ListView listView;
+    private ImageButton settingsButton;
     List<String> names;
 
 
@@ -44,6 +48,15 @@ public class ListFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View root = inflater.inflate(R.layout.fragment_list, container, false);
+
+        settingsButton = (ImageButton) root.findViewById(R.id.settings_button);
+        settingsButton.setOnClickListener(new View.OnClickListener(){
+           @Override
+           public void onClick(View v){
+                Intent settingsIntent = new Intent(getActivity().getApplicationContext(), SettingsActivity.class);
+                startActivity(settingsIntent);
+           }
+        });
         return root;
     }
 }

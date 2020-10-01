@@ -1,30 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">>
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
     <SwitchPreferenceCompat
         android:id="@+id/switch_pref_location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scrollHorizontally="true"
         app:key="location"
-        app:title="Allow this app to access your location"/>
+        app:title="Allow this app to access your location"
+        app:iconSpaceReserved="false"/>
+
+
     <SwitchPreferenceCompat
         android:id="@+id/switch_pref_fine_location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scrollHorizontally="true"
         app:key="fine_location"
-        app:title="Allow this app to access your fine location"/>
+        app:title="Allow this app to access your fine location"
+        app:iconSpaceReserved="false"/>
+
+
     <SwitchPreferenceCompat
         android:id="@+id/switch_pref_camera"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scrollHorizontally="true"
         app:key="camera"
-        app:title="Allow this app to access your camera"/>
+        app:title="Allow this app to access your camera"
+        app:iconSpaceReserved="false"/>
+
+
     <SwitchPreferenceCompat
         android:id="@+id/switch_pref_storage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scrollHorizontally="true"
         app:key="storage"
-        app:title="Allow this app to access device storage"/>
+        app:title="Allow this app to access device storage"
+        app:iconSpaceReserved="false"/>
+
     <SwitchPreferenceCompat
         android:id="@+id/switch_pref_collect_data"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scrollHorizontally="true"
         app:key="collect_data"
-        app:title="Allow this app to collect data"/>
+        app:title="Allow this app to collect data"
+        app:iconSpaceReserved="false"/>
+
+
     <SwitchPreferenceCompat
         android:id="@+id/switch_pref_microphone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:isScrollContainer="false"
+        android:scrollbars="horizontal"
+        android:scrollHorizontally="false"
         app:key="microphone"
-        app:title="Allow this app to access your microphone"/>
+        app:title="Allow this app to access your microphone"
+        app:iconSpaceReserved="false"/>
+
 
 </PreferenceScreen>

@@ -1,14 +1,9 @@
 package com.android.studyspot;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
-
 import android.os.Bundle;
-import android.widget.TableLayout;
-import android.widget.Toolbar;
-
 import com.google.android.material.tabs.TabLayout;
 
 
@@ -17,20 +12,36 @@ public class MainActivity
 
     private ViewPager viewPager;
     private TabLayout tabLayout;
+    private Toolbar toolbar;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        tabLayout = (TabLayout) findViewById(R.id.tabLayout);
-        TabLayout.Tab map_fragment = tabLayout.newTab();
-        TabLayout.Tab list_fragment = tabLayout.newTab();
-        tabLayout.addTab(map_fragment, true);
-        tabLayout.addTab(list_fragment);
-        map_fragment.setText("Map");
-        list_fragment.setText("Location List");
 
+
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        tabLayout = (TabLayout) findViewById(R.id.tabLayout);
+
+        viewPager = findViewById(R.id.viewPager);
+        TabAssistant tabAssistant = new TabAssistant(getSupportFragmentManager(), 2);
+        viewPager.setAdapter(tabAssistant);
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+
+        tabLayout.setupWithViewPager(viewPager);
+
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                viewPager.setCurrentItem(tab.getPosition());
+            }
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) { }
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) { }
+        });
 
     }
 

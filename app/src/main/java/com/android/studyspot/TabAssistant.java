@@ -33,8 +33,8 @@ public class TabAssistant extends FragmentStatePagerAdapter {
                 MapFragment mapFragment = new MapFragment();
                 return mapFragment;
             case 1:
-                ListFragment listFragment = new ListFragment();
-                return listFragment;
+                LocationListFragment locationListFragment = new LocationListFragment();
+                return locationListFragment;
         }
         return null;
     }

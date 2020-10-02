@@ -22,13 +22,12 @@
         android:layout_marginRight="5dp"
         android:layout_marginBottom="5dp"
         android:adjustViewBounds="true"
-        android:maxWidth="32dp"
-        android:maxHeight="32dp"
-        android:minWidth="32dp"
-        android:minHeight="32dp"
+        android:maxWidth="45dp"
+        android:maxHeight="45dp"
+        android:minWidth="45dp"
+        android:minHeight="45dp"
         android:scaleType="fitCenter"
         android:src="@drawable/gear">
 
     </ImageButton>
-
 </FrameLayout>

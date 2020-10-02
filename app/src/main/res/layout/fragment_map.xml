@@ -6,9 +6,21 @@
     tools:context=".MapFragment">
 
 
-    <TextView
-        android:id="@+id/textView"
+
+    <ImageButton
+        android:id="@+id/settings_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Map" />
+        android:layout_gravity="bottom|right"
+        android:layout_marginRight="5dp"
+        android:layout_marginBottom="5dp"
+        android:adjustViewBounds="true"
+        android:maxWidth="45dp"
+        android:maxHeight="45dp"
+        android:minWidth="45dp"
+        android:minHeight="45dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/gear">
+
+    </ImageButton>
 </FrameLayout>

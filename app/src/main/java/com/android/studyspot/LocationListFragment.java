@@ -1,38 +1,40 @@
 package com.android.studyspot;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ListView;
-import java.util.Arrays;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link ListFragment#newInstance} factory method to
+ * Use the {@link LocationListFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ListFragment extends Fragment {
+public class LocationListFragment extends Fragment {
 
 
-    private ListView listView;
+    private RecyclerView listView;
     private ImageButton settingsButton;
     List<String> names;
 
 
-    public ListFragment() {
+    public LocationListFragment() {
         // Required empty public constructor
     }
-    public static ListFragment newInstance(String param1, String param2) {
-        ListFragment fragment = new ListFragment();
+    public static LocationListFragment newInstance(String param1, String param2) {
+        LocationListFragment fragment = new LocationListFragment();
         return fragment;
     }
 
@@ -49,6 +51,14 @@ public class ListFragment extends Fragment {
         // Inflate the layout for this fragment
         View root = inflater.inflate(R.layout.fragment_list, container, false);
 
+        //code for list init
+        RecyclerView rvList = (RecyclerView) root.findViewById(R.id.recycler_view);
+        names = Arrays.asList(Address.NAMES);
+        ListAdapter listAdapter = new ListAdapter(names);
+        rvList.setAdapter(listAdapter);
+        rvList.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        //code for settings button
         settingsButton = (ImageButton) root.findViewById(R.id.settings_button);
         settingsButton.setOnClickListener(new View.OnClickListener(){
            @Override
@@ -59,4 +69,6 @@ public class ListFragment extends Fragment {
         });
         return root;
     }
+
+
 }

@@ -1,5 +1,10 @@
 package com.android.studyspot;
 
+import android.view.View;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.Arrays;
 
 public class Address {
@@ -341,14 +346,15 @@ public class Address {
    private String name;
    private String address;
 
-   public Address(String name, String address) throws Exception {
-       if (Arrays.asList(NAMES).contains(name)){
-             this.name = name;
-             this.address = address;
-       }else{
-           throw new Exception("Location" + name + "is not a valid location on OSU campus");
-       }
-   }
+//    public Address(@NonNull View itemView) throws Exception{
+//        super(itemView);
+//        if (Arrays.asList(NAMES).contains(name)){
+//            this.name = name;
+//            this.address = address;
+//        }else{
+//            throw new Exception("Location" + name + "is not a valid location on OSU campus");
+//        }
+//    }
 
-   //methods to perform on the Address object
+    //methods to perform on the Address object
 }

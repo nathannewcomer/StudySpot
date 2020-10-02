@@ -53,7 +53,7 @@ public class ListFragment extends Fragment {
         settingsButton.setOnClickListener(new View.OnClickListener(){
            @Override
            public void onClick(View v){
-                Intent settingsIntent = new Intent(getActivity().getApplicationContext(), SettingsActivity.class);
+                Intent settingsIntent = new Intent(requireActivity().getApplicationContext(), SettingsActivity.class);
                 startActivity(settingsIntent);
            }
         });

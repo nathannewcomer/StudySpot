@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +25,7 @@ import java.util.List;
  */
 public class LocationListFragment extends Fragment {
 
+    private static final String TAG = "LocationListFragment";
 
     private RecyclerView listView;
     private ImageButton settingsButton;
@@ -32,15 +34,20 @@ public class LocationListFragment extends Fragment {
 
     public LocationListFragment() {
         // Required empty public constructor
+
     }
     public static LocationListFragment newInstance(String param1, String param2) {
         LocationListFragment fragment = new LocationListFragment();
+        Log.d(TAG,"newInstance() called by" + TAG);
+
         return fragment;
+
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG,"onCreate() called by" + TAG);
 
 
     }
@@ -67,6 +74,8 @@ public class LocationListFragment extends Fragment {
                 startActivity(settingsIntent);
            }
         });
+        Log.d(TAG,"onCreateView() called by" + TAG);
+
         return root;
     }
 

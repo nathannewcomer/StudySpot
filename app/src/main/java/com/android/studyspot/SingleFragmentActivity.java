@@ -1,6 +1,7 @@
 package com.android.studyspot;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -12,6 +13,9 @@ import androidx.fragment.app.FragmentManager;
  * and Kristin Marsicano.
  */
 public abstract class SingleFragmentActivity extends AppCompatActivity {
+
+    private static final String TAG = "SingleFragmentActivity";
+
     protected abstract Fragment createFragment();
 
     @Override
@@ -26,6 +30,8 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
                     .add(R.id.fragment_container, fragment)
                     .commit();
         }
+        Log.d(TAG,"onCreate() called by" + TAG);
+
     }
 
 }

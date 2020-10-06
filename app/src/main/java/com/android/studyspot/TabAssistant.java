@@ -1,5 +1,7 @@
 package com.android.studyspot;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -7,6 +9,7 @@ import androidx.fragment.app.FragmentStatePagerAdapter;
 
 public class TabAssistant extends FragmentStatePagerAdapter {
 
+    private static final String TAG = "TabAssistant";
     int tabs;
 
     public TabAssistant(@NonNull FragmentManager fm, int tab_count) {
@@ -16,6 +19,8 @@ public class TabAssistant extends FragmentStatePagerAdapter {
 
     @Override
     public CharSequence getPageTitle(int position) {
+        Log.d(TAG,"getPageTitle() called by" + TAG);
+
         switch (position) {
             case 0:
                 return "Map";
@@ -28,6 +33,8 @@ public class TabAssistant extends FragmentStatePagerAdapter {
     @NonNull
     @Override
     public Fragment getItem(int position) {
+        Log.d(TAG,"getItem() called by" + TAG);
+
         switch (position) {
             case 0:
                 MapFragment mapFragment = new MapFragment();
@@ -41,6 +48,8 @@ public class TabAssistant extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
+        Log.d(TAG,"getCount() called by" + TAG);
+
         return tabs;
     }
 }

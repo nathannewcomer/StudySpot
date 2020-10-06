@@ -4,12 +4,14 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
+
 import com.google.android.material.tabs.TabLayout;
 
 
 public class MainActivity
         extends AppCompatActivity {
-
+    private static final String TAG = "MainActivity";
     private ViewPager viewPager;
     private TabLayout tabLayout;
     private Toolbar toolbar;
@@ -43,6 +45,8 @@ public class MainActivity
             @Override
             public void onTabReselected(TabLayout.Tab tab) { }
         });
+        Log.d(TAG,"onCreate() called by" + TAG);
+
 
     }
 

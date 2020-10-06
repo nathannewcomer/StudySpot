@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,7 @@ public class MapFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private static final String TAG = "MapFragment";
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -47,12 +49,16 @@ public class MapFragment extends Fragment {
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
+        Log.d(TAG,"newInstance() called by" + TAG);
+
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG,"onCreate() called by" + TAG);
+
 
     }
 
@@ -69,6 +75,8 @@ public class MapFragment extends Fragment {
                 startActivity(settingsIntent);
             }
         });
+        Log.d(TAG,"onCreateView() called by" + TAG);
+
         return root;
     }
 }

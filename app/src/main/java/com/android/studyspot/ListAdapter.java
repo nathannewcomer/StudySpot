@@ -1,6 +1,7 @@
 package com.android.studyspot;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,8 @@ import java.util.List;
 // https://guides.codepath.com/android/using-the-recyclerview. All rights reserved to CodePath
 
 public class ListAdapter extends RecyclerView.Adapter <ListAdapter.ViewHolder> {
+
+    private static final String TAG = "ListAdapter";
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public TextView location_name;
@@ -38,6 +41,8 @@ public class ListAdapter extends RecyclerView.Adapter <ListAdapter.ViewHolder> {
         LayoutInflater layoutInflater = LayoutInflater.from(con);
         View location = layoutInflater.inflate(R.layout.location_item, parent, false);
         ViewHolder holder = new ViewHolder(location);
+        Log.d(TAG,"onCreateViewHolder() called by" + TAG);
+
         return holder;
     }
 
@@ -47,10 +52,13 @@ public class ListAdapter extends RecyclerView.Adapter <ListAdapter.ViewHolder> {
 
         TextView text = holder.location_name;
         text.setText(Location);
+        Log.d(TAG,"onBindViewHolder() called by" + TAG);
+
     }
 
     @Override
     public int getItemCount() {
+        Log.d(TAG,"getItemCount() called by" + TAG);
         return Address.NAMES.length;
     }
 

@@ -4,6 +4,10 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 
@@ -21,6 +25,13 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     }
 
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
+        View v = super.onCreateView(inflater,container,savedInstanceState);
+        Log.d(TAG,"onCreateView() called by" + TAG);
+        return v;
+    }
+
     /*logging fragment lifecycle */
     @Override
     public void onStart(){
@@ -36,7 +47,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     public void onPause() {
         super.onPause();
         Context context = requireActivity();
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+        //SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
         Log.d(TAG, "onPause() called by" + TAG);
     }
     @Override

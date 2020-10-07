@@ -311,7 +311,7 @@ public class Address {
 "Twelfth Ave, 395 W",
 "Tzagournis Medical Research Facility",
 "University Hall",
-"University Plaza HotelView University Plaza Hotel Google map",
+"University Plaza HotelView",
 "Urban Arts Space",
 "Veterinary Medical Center",
 "Veterinary Medicine Academic",
@@ -339,7 +339,6 @@ public class Address {
 "Woody Hayes Athletic Center",
 "Younkin Success Center",
 "Zoology Research Laboratory",
-"Street addresses",
 "4-H Center",
 };
 

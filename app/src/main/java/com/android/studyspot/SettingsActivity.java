@@ -35,7 +35,7 @@ public class SettingsActivity extends AppCompatActivity {
         if (fragment == null) {
             fragment = new SettingsFragment();
             fm.beginTransaction()
-                    .replace(R.id.fragment_container, fragment)
+                    .add(R.id.fragment_container, fragment)
                     .commit();
         }
         PreferenceManager.setDefaultValues(this, R.xml.settings, false);

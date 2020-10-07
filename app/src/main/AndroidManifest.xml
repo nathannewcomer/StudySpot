@@ -23,7 +23,8 @@
             android:name=".SettingsActivity"
             android:parentActivityName =".MainActivity" />
         <activity android:name=".ReviewActivity"
-            android:parentActivityName = ".MainActivity" />
+            android:parentActivityName = ".MainActivity">
+        </activity>
 
     </application>
 

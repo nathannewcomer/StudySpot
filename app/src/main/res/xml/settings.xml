@@ -28,7 +28,7 @@
         android:id="@+id/switch_pref_background_location"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:key="fine_location"
+        app:key="background_location"
         android:defaultValue = "false"
         app:title="Allow this app to access your location in the background"
         app:iconSpaceReserved="false"/>

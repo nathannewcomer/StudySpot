@@ -41,7 +41,7 @@ public class ListAdapter extends RecyclerView.Adapter <ListAdapter.ViewHolder> {
         LayoutInflater layoutInflater = LayoutInflater.from(con);
         View location = layoutInflater.inflate(R.layout.location_item, parent, false);
         ViewHolder holder = new ViewHolder(location);
-        Log.d(TAG,"onCreateViewHolder() called by" + TAG);
+        //Log.d(TAG,"onCreateViewHolder() called by" + TAG);
 
         return holder;
     }
@@ -52,13 +52,13 @@ public class ListAdapter extends RecyclerView.Adapter <ListAdapter.ViewHolder> {
 
         TextView text = holder.location_name;
         text.setText(Location);
-        Log.d(TAG,"onBindViewHolder() called by" + TAG);
+        //Log.d(TAG,"onBindViewHolder() called by" + TAG);
 
     }
 
     @Override
     public int getItemCount() {
-        Log.d(TAG,"getItemCount() called by" + TAG);
+        //Log.d(TAG,"getItemCount() called by" + TAG);
         return Address.NAMES.length;
     }
 

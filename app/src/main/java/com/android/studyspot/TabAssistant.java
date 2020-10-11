@@ -19,7 +19,7 @@ public class TabAssistant extends FragmentStatePagerAdapter {
 
     @Override
     public CharSequence getPageTitle(int position) {
-        Log.d(TAG,"getPageTitle() called by" + TAG);
+        //Log.d(TAG,"getPageTitle() called by" + TAG);
 
         switch (position) {
             case 0:
@@ -33,7 +33,7 @@ public class TabAssistant extends FragmentStatePagerAdapter {
     @NonNull
     @Override
     public Fragment getItem(int position) {
-        Log.d(TAG,"getItem() called by" + TAG);
+        //Log.d(TAG,"getItem() called by" + TAG);
 
         switch (position) {
             case 0:
@@ -48,7 +48,7 @@ public class TabAssistant extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        Log.d(TAG,"getCount() called by" + TAG);
+        //Log.d(TAG,"getCount() called by" + TAG);
 
         return tabs;
     }

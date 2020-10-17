@@ -76,6 +76,12 @@ public class StudySpot {
         mName = name;
     }
 
+    public String getDocumentName(){
+        String docName = new String(mName);
+        docName = docName.replaceAll("\\s|/","_");
+        return docName;
+    }
+
     public GeoPoint getCoords() {
         return mCoords;
     }
@@ -137,6 +143,15 @@ public class StudySpot {
     public Map<String, Double> getNoiseRecord() {
         return noiseRecord;
     }
+
+    public void setLightRecord(Map<String, Double> lightRecord) {
+        this.lightRecord = lightRecord;
+    }
+
+    public void setNoiseRecord(Map<String, Double> noiseRecord) {
+        this.noiseRecord = noiseRecord;
+    }
+
 
     //TODO method to calculate average,noise,light, rating
 }

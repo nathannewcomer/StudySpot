@@ -36,17 +36,23 @@ public class MapViewModel extends ViewModel {
     private ArrayList<StudySpot> mSpots;
 
     /*
-     * Initializes the instance variables of MapViewModel
+     * Initializes the instance variables of MapViewModel. Call this after
+     * getting the view model for the first time.
      */
     public void initialize(){
-        mDatabase = FirebaseFirestore.getInstance();
-        mSpots = new ArrayList<StudySpot>();
+        if(mDatabase == null){
+            mDatabase = FirebaseFirestore.getInstance();
+        }
+        if(mSpots == null){
+            mSpots = new ArrayList<StudySpot>();
+        }
     }
 
     //methods below this point work, but could use more testing.
 
     /*
      *Retrieves all of the study spots in the database and puts them in mSpots.
+     * Also retrieves all reviews and light and noise measurements for the spot.
      * Warning! mSpots will be overwritten.
      */
     public void retrieveAllStudySpots(){
@@ -313,5 +319,16 @@ public class MapViewModel extends ViewModel {
     public ArrayList<StudySpot> getSpots() {
         return mSpots;
     }
+    /*
+     *Adds the study spot to be stored in mSpots.
+     *Will create a new ArrayList for mSpots if mSpots has not been initialized
+     */
+    public void addStudySpot(StudySpot spot){
+        if(mSpots == null){
+            mSpots = new ArrayList<StudySpot>();
+        }
+        mSpots.add(spot);
+    }
+
 
 }

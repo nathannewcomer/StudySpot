@@ -37,6 +37,7 @@ import java.util.Date;
 
 public class MapFragment extends Fragment{
     private static final String TAG = "MapFragment";
+    private static final String GEOCODING_REQUEST_OK = "OK";
     private MapViewModel viewModel;
     private GoogleMap map;
     private ImageButton settingsButton;
@@ -52,6 +53,7 @@ public class MapFragment extends Fragment{
         super.onCreate(savedInstanceState);
         Log.d(TAG,"onCreate() called by" + TAG);
         viewModel = new ViewModelProvider(this).get(MapViewModel.class);
+        viewModel.initialize();
 
     }
 
@@ -69,25 +71,10 @@ public class MapFragment extends Fragment{
             }
         });
 
-        //mQueue = Volley.newRequestQueue(requireActivity().getApplicationContext());
+        mQueue = Volley.newRequestQueue(requireActivity().getApplicationContext());
         Log.d(TAG,"onCreateView() called by" + TAG);
 
-        viewModel.initialize();
         viewModel.retrieveAllStudySpots();
-        /*
-        Date date = new Date();
-        StudySpot spot = new StudySpot();
-        spot.setName("Geology Library");
-        spot.setAddress("155 South Oval Mall Columbus, OH 43201");
-        spot.setSchedule("https://library.osu.edu/locations/geology/hours");
-        spot.setCoords(new GeoPoint(39.9982244,-83.01188809999999));
-        spot.getReviews().add(new Review(5,1,"test","www.google.com"));
-        spot.getLightRecord().put(Long.toString(date.getTime()),0.0);
-        spot.getNoiseRecord().put(Long.toString(date.getTime()),0.0);
-        viewModel.saveStudySpot(spot);
-         */
-
-
         return root;
     }
 
@@ -127,26 +114,28 @@ public class MapFragment extends Fragment{
         address = address.replaceFirst( "\\d+-?\\d*\\z", "")
                 .trim();  //gets rid of the zipcode at the end of the address
         //replaces all spaces or commmas with %20
-        address.replaceAll("\\s","%20");
+        address = address.replaceAll("\\s","%20");
 
         String geocoding_request = "https://maps.googleapis.com/maps/api/geocode/json?";
         StringBuilder builder = new StringBuilder(geocoding_request);
         builder.append("address=");
         builder.append(address);
         builder.append("&key=");
-        builder.append(getString(R.string.maps_api_key));
+        builder.append(getString(R.string.geocoding_api_key));
         builder.append("&language=en");
         return builder.toString();
     }
 
 
-
+    //TODO this method probably does too much, maybe separate saving it into another call
     /*
-     * Creates a new StudySpot and adds it to the ViewModel. Populates the coords of the
-     * Studyspot by making a Google Maps Geocode request using the spot's address.
-     * Make sure your address does not have the building name or floor name in it
+     * Creates a new StudySpot,adds it to the ViewModel, and saves it to firebase.
+     * Populates the coords of the Studyspot by making a Google Maps Geocode request using the
+     * spot's address. Make sure your address does not have the building name or floor name in it
+     * Note: the volley.add method needs to run in the main thread
+     */
 
-    private void createNewStudySpot(final String address, final String schedule, final String name){
+    private void createNewStudySpot(final String name, final String address, final String schedule){
         String url = createGeocodeRequestURL(address);
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url,
@@ -154,12 +143,23 @@ public class MapFragment extends Fragment{
             @Override
             public void onResponse(JSONObject response) {
                 try{
-                    JSONObject location = response.getJSONArray("results").getJSONObject(0).getJSONObject("geometry")
-                            .getJSONObject("location");
-                    GeoPoint coords = new GeoPoint(location.getDouble("lat"), location.getDouble("lng"));
-                    StudySpot spot = new StudySpot(name, coords, schedule, address)
+                    String status = response.getString("status");
+                    if(status != null && status.compareToIgnoreCase(GEOCODING_REQUEST_OK) == 0){
+                        JSONObject location = response.getJSONArray("results").getJSONObject(0).getJSONObject("geometry")
+                                .getJSONObject("location");
+                        GeoPoint coords = new GeoPoint(location.getDouble("lat"), location.getDouble("lng"));
+                        StudySpot spot = new StudySpot(name, coords, schedule, address);
+                        viewModel.addStudySpot(spot);
+                        viewModel.saveStudySpot(spot);
+                    }
+                    else if(status != null){
+                        throw new Exception("Geocoding request result status was: " + status);
+                    }
+                    else{
+                        throw new Exception("Geocoding request result did not return status OK");
+                    }
                 }
-                catch(JSONException e){
+                catch(Exception e){
                     String msg = e.getMessage();
                     if(msg != null){
                         Log.d(TAG,  msg);
@@ -167,18 +167,16 @@ public class MapFragment extends Fragment{
                     else{
                         Log.d(TAG, "Error handling JSON");
                     }
-
                 }
             }
         }, new Response.ErrorListener(){
             @Override
             public void onErrorResponse(VolleyError error) {
-                // TODO: Handle error
-
+                Log.d(TAG, error.getLocalizedMessage());
             }
         });
         mQueue.add(jsonObjectRequest);
     }
-    */
+
 
 }

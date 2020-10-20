@@ -37,11 +37,10 @@ import java.util.Date;
 
 public class MapFragment extends Fragment{
     private static final String TAG = "MapFragment";
-    private static final String GEOCODING_REQUEST_OK = "OK";
     private MapViewModel viewModel;
     private GoogleMap map;
     private ImageButton settingsButton;
-    private RequestQueue mQueue;
+
 
 
     public MapFragment() {
@@ -53,8 +52,6 @@ public class MapFragment extends Fragment{
         super.onCreate(savedInstanceState);
         Log.d(TAG,"onCreate() called by" + TAG);
         viewModel = new ViewModelProvider(this).get(MapViewModel.class);
-        viewModel.initialize();
-
     }
 
     @Override
@@ -71,10 +68,12 @@ public class MapFragment extends Fragment{
             }
         });
 
-        mQueue = Volley.newRequestQueue(requireActivity().getApplicationContext());
         Log.d(TAG,"onCreateView() called by" + TAG);
 
+
         viewModel.retrieveAllStudySpots();
+
+
         return root;
     }
 
@@ -105,78 +104,7 @@ public class MapFragment extends Fragment{
     }
 
 
-    /*
-     *Returns a URL for a Google Maps Geocode request.
-     *See https://developers.google.com/maps/documentation/geocoding/overview.
-     *Make sure your address does not have the building name or floor in it
-     */
-    private String createGeocodeRequestURL(String address){
-        address = address.replaceFirst( "\\d+-?\\d*\\z", "")
-                .trim();  //gets rid of the zipcode at the end of the address
-        //replaces all spaces or commmas with %20
-        address = address.replaceAll("\\s","%20");
 
-        String geocoding_request = "https://maps.googleapis.com/maps/api/geocode/json?";
-        StringBuilder builder = new StringBuilder(geocoding_request);
-        builder.append("address=");
-        builder.append(address);
-        builder.append("&key=");
-        builder.append(getString(R.string.geocoding_api_key));
-        builder.append("&language=en");
-        return builder.toString();
-    }
-
-
-    //TODO this method probably does too much, maybe separate saving it into another call
-    /*
-     * Creates a new StudySpot,adds it to the ViewModel, and saves it to firebase.
-     * Populates the coords of the Studyspot by making a Google Maps Geocode request using the
-     * spot's address. Make sure your address does not have the building name or floor name in it
-     * Note: the volley.add method needs to run in the main thread
-     */
-
-    private void createNewStudySpot(final String name, final String address, final String schedule){
-        String url = createGeocodeRequestURL(address);
-
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url,
-                null, new Response.Listener<JSONObject>(){
-            @Override
-            public void onResponse(JSONObject response) {
-                try{
-                    String status = response.getString("status");
-                    if(status != null && status.compareToIgnoreCase(GEOCODING_REQUEST_OK) == 0){
-                        JSONObject location = response.getJSONArray("results").getJSONObject(0).getJSONObject("geometry")
-                                .getJSONObject("location");
-                        GeoPoint coords = new GeoPoint(location.getDouble("lat"), location.getDouble("lng"));
-                        StudySpot spot = new StudySpot(name, coords, schedule, address);
-                        viewModel.addStudySpot(spot);
-                        viewModel.saveStudySpot(spot);
-                    }
-                    else if(status != null){
-                        throw new Exception("Geocoding request result status was: " + status);
-                    }
-                    else{
-                        throw new Exception("Geocoding request result did not return status OK");
-                    }
-                }
-                catch(Exception e){
-                    String msg = e.getMessage();
-                    if(msg != null){
-                        Log.d(TAG,  msg);
-                    }
-                    else{
-                        Log.d(TAG, "Error handling JSON");
-                    }
-                }
-            }
-        }, new Response.ErrorListener(){
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d(TAG, error.getLocalizedMessage());
-            }
-        });
-        mQueue.add(jsonObjectRequest);
-    }
 
 
 }

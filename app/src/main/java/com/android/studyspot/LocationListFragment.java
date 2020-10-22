@@ -18,6 +18,7 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 
 import com.android.studyspot.models.StudySpot;
+import com.google.android.gms.maps.SupportMapFragment;
 
 import java.util.Arrays;
 import java.util.List;

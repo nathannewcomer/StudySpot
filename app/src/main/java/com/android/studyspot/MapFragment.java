@@ -4,7 +4,9 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -24,7 +26,11 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.gson.JsonObject;
@@ -34,12 +40,16 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 public class MapFragment extends Fragment{
     private static final String TAG = "MapFragment";
     private MapViewModel viewModel;
-    private GoogleMap map;
+    private MapView mMapView;
+    private GoogleMap googleMap;
     private ImageButton settingsButton;
+    List<Marker> markers;
 
 
 
@@ -51,7 +61,7 @@ public class MapFragment extends Fragment{
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG,"onCreate() called by" + TAG);
-        viewModel = new ViewModelProvider(this).get(MapViewModel.class);
+        viewModel = new ViewModelProvider(requireActivity()).get(MapViewModel.class);
     }
 
     @Override
@@ -65,7 +75,26 @@ public class MapFragment extends Fragment{
             public void onClick(View v){
                 Intent settingsIntent = new Intent(getActivity().getApplicationContext(), SettingsActivity.class);
                 startActivity(settingsIntent);
-                Log.d(TAG, "viewModel.mSpots = " + viewModel.getSpots().getValue().toString());
+            }
+        });
+
+        // initialize map
+        mMapView = root.findViewById(R.id.mapView);
+        mMapView.onCreate(savedInstanceState);
+        mMapView.onResume(); // needed to get the map to display immediately
+        mMapView.getMapAsync(new OnMapReadyCallback() {
+            @Override
+            public void onMapReady(GoogleMap mMap) {
+                googleMap = mMap;
+                setMarkers(viewModel.getSpots().getValue());
+            }
+        });
+
+        // add observer to studySpots
+        viewModel.getSpots().observe(getViewLifecycleOwner(), new Observer<List<StudySpot>>() {
+            @Override
+            public void onChanged(List<StudySpot> studySpots) {
+                setMarkers(studySpots);
             }
         });
 
@@ -100,7 +129,15 @@ public class MapFragment extends Fragment{
         Log.d(TAG, "onDestroy() called by" + TAG);
     }
 
+    // create markers from StudySpot objects and put them into a list
+    private void setMarkers(List<StudySpot> spots) {
+        markers = new ArrayList<>();
 
+        for (StudySpot spot : spots) {
+            LatLng coords = new LatLng(spot.getCoords().getLatitude(), spot.getCoords().getLongitude());
+            markers.add(googleMap.addMarker(new MarkerOptions().title(spot.getName()).position(coords)));
+        }
+    }
 
 
 

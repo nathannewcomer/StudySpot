@@ -5,6 +5,7 @@ import com.google.firebase.firestore.GeoPoint;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class StudySpot {
     public static final String KEY_NAME = "name";
@@ -14,7 +15,7 @@ public class StudySpot {
     public static final String KEY_AVG_NOISE = "avg_noise";
     public static final String KEY_AVG_LIGHT = "avg_light";
     public static final String KEY_ADDRESS = "address";
-    public static final String KEY_LIGHT_RECORD ="light_record";
+    public static final String KEY_LIGHT_RECORD = "light_record";
     public static final String KEY_NOISE_RECORD = "noise_record";
 
 
@@ -22,16 +23,15 @@ public class StudySpot {
     private GeoPoint mCoords;
     private String mSchedule;
     private double mAvgRating, mAvgNoise, mAvgLight;
-    //private Map<String, String> address;
     private String mAddress;
     private ArrayList<Review> mReviews;
 
     //maybe consider making these their own classes?
-    private Map<String, Double> lightRecord;
-    private Map<String, Double> noiseRecord;
+    private Map<String, Double> mLightRecord;
+    private Map<String, Double> mNoiseRecord;
 
 
-    public StudySpot(){
+    public StudySpot() {
         mName = null;
         mCoords = null;
         mSchedule = null;
@@ -40,10 +40,11 @@ public class StudySpot {
         mAvgLight = 0;
         mAvgRating = 0;
         mReviews = new ArrayList<Review>();
-        lightRecord = new HashMap<>();
-        noiseRecord = new HashMap<>();
+        mLightRecord = new HashMap<>();
+        mNoiseRecord = new HashMap<>();
     }
-    public StudySpot(String name, GeoPoint coords, String schedulePath, String address){
+
+    public StudySpot(String name, GeoPoint coords, String schedulePath, String address) {
         mName = name;
         mCoords = new GeoPoint(coords.getLatitude(), coords.getLongitude());
         mSchedule = schedulePath;
@@ -52,12 +53,12 @@ public class StudySpot {
         mAvgNoise = 0;
         mAvgRating = 0;
         mReviews = new ArrayList<Review>();
-        lightRecord = new HashMap<>();
-        noiseRecord = new HashMap<>();
+        mLightRecord = new HashMap<>();
+        mNoiseRecord = new HashMap<>();
     }
 
     public StudySpot(String name, GeoPoint coords, String schedulePath, String address, double avgRating,
-                     double avgNoise, double avgLight){
+                     double avgNoise, double avgLight) {
         mName = name;
         mCoords = new GeoPoint(coords.getLatitude(), coords.getLongitude());
         mSchedule = schedulePath;
@@ -66,6 +67,8 @@ public class StudySpot {
         mAvgNoise = avgNoise;
         mAvgRating = avgRating;
         mReviews = new ArrayList<Review>();
+        mLightRecord = new HashMap<>();
+        mNoiseRecord = new HashMap<>();
     }
 
     public String getName() {
@@ -76,9 +79,10 @@ public class StudySpot {
         mName = name;
     }
 
-    public String getDocumentName(){
+    //TODO move this maybe?
+    public String getDocumentName() {
         String docName = new String(mName);
-        docName = docName.replaceAll("\\s|/","_");
+        docName = docName.replaceAll("\\s|/", "_");
         return docName;
     }
 
@@ -103,7 +107,9 @@ public class StudySpot {
     }
 
     public void setAvgRating(double avgRating) {
-        mAvgRating = avgRating;
+        if(avgRating >= 0.0){
+            mAvgRating = avgRating;
+        }
     }
 
     public double getAvgNoise() {
@@ -130,28 +136,121 @@ public class StudySpot {
         mAddress = address;
     }
 
-
-    //TODO this could probably be implemented better but i don't have time right now
-    public ArrayList<Review> getReviews() {
-        return mReviews;
+    //clears the reviews for the spot and sets the avg rating to 0
+    public void clearReviews() {
+        mReviews.clear();
+        mAvgRating = 0;
     }
 
-    public Map<String, Double> getLightRecord() {
-        return lightRecord;
+    //adds a review to the spot
+    public void addReview(Review review) {
+        mReviews.add(review);
     }
 
-    public Map<String, Double> getNoiseRecord() {
-        return noiseRecord;
+    //adds a review to the spot at position pos and shifts all reviews at and or after pos 1 to the right
+    public void addReview(int pos, Review review) {
+        if (pos >= 0 && pos <= mReviews.size()) {
+            mReviews.add(pos, review);
+        }
     }
 
-    public void setLightRecord(Map<String, Double> lightRecord) {
-        this.lightRecord = lightRecord;
+    //removes a review at position pos if it exists, otherwise return null
+    public Review removeReview(int pos) {
+        if (pos >= 0 && pos < mReviews.size()) {
+            return mReviews.remove(pos);
+        } else {
+            return null;
+        }
     }
 
-    public void setNoiseRecord(Map<String, Double> noiseRecord) {
-        this.noiseRecord = noiseRecord;
+    //get the review at position pos, otherwise return null
+    public Review getReview(int pos) {
+        if (pos >= 0 && pos < mReviews.size()) {
+            return mReviews.get(pos);
+        } else {
+            return null;
+        }
+    }
+
+    //returns the number of reviews
+    public int numberOfReviews() {
+        return mReviews.size();
+    }
+
+    public double calculateAvgRating(){
+        int numReviews = mReviews.size();
+        double avg = 0;
+        for(Review review: mReviews){
+            avg += (review.getRating() / numReviews);
+        }
+        return avg;
+    }
+
+    public double calculateAvgNoise(){
+        int numRecords = mNoiseRecord.size();
+        double avg = 0;
+        for(Map.Entry<String, Double> record: mNoiseRecord.entrySet()){
+            avg += ( record.getValue() / numRecords);
+        }
+        return avg;
+    }
+
+    public double calculateAvgLight(){
+        int numRecords = mLightRecord.size();
+        double avg = 0;
+        for(Map.Entry<String, Double> record: mLightRecord.entrySet()){
+            avg += ( record.getValue() / numRecords);
+        }
+        return avg;
+    }
+
+    //returns the number of light records
+    public int numberOfLightRecords() {
+        return mLightRecord.size();
+    }
+
+    //returns the number of noise records
+    public int numberOfNoiseRecords() {
+        return mNoiseRecord.size();
+    }
+
+    //clears the light records for a spot and sets the average light to 0
+    public void clearLightRecords() {
+        mLightRecord.clear();
+        mAvgLight = 0;
     }
 
 
-    //TODO method to calculate average,noise,light, rating
+    //clears the light records for a spot and sets the average light to 0
+    public void clearNoiseRecords() {
+        mNoiseRecord.clear();
+        mAvgNoise = 0;
+    }
+
+
+    public Double getLightRecord(String timestamp) {
+        return mLightRecord.get(timestamp);
+    }
+
+    public Double getNoiseRecord(String timestamp) {
+        return mNoiseRecord.get(timestamp);
+    }
+
+    public void addLightRecord(String timestamp, double value) {
+        mLightRecord.put(timestamp, value);
+    }
+
+    public void addNoiseRecord(String timestamp, double value) {
+        mNoiseRecord.put(timestamp, value);
+    }
+
+    public Set<Map.Entry<String, Double>> getAllLightRecords(){
+        return mLightRecord.entrySet();
+    }
+
+    public Set<Map.Entry<String, Double>> getAllNoiseRecords(){
+        return mNoiseRecord.entrySet();
+    }
+
+
 }

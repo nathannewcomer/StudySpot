@@ -27,7 +27,9 @@ public class Review {
     }
 
     public void setRating(double rating) {
-        mRating = rating;
+        if(rating > 0.0){
+            mRating = rating;
+        }
     }
 
     public int getLikes() {

@@ -30,6 +30,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Set;
 
 public class MapViewModel extends AndroidViewModel {
     //the path to the studyspots collection in firebase
@@ -125,10 +126,9 @@ public class MapViewModel extends AndroidViewModel {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
-                    ArrayList<Review> reviews = spot.getReviews();
                     for (QueryDocumentSnapshot document : task.getResult()) {
                         Review review = document.toObject(Review.class);
-                        reviews.add(review);
+                        spot.addReview(review);
                     }
                 } else {
                     Log.d(TAG, "Error getting reviews: ", task.getException());
@@ -156,7 +156,9 @@ public class MapViewModel extends AndroidViewModel {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
                         Map<String,Double> noiseRecord = (Map<String, Double>) document.get(StudySpot.KEY_NOISE_RECORD);
-                        spot.setNoiseRecord(noiseRecord);
+                        for(Map.Entry<String, Double> record : noiseRecord.entrySet()){
+                            spot.addNoiseRecord(record.getKey(), record.getValue());
+                        }
                     } else {
                         Log.d(TAG, "No such document");
                     }
@@ -185,7 +187,9 @@ public class MapViewModel extends AndroidViewModel {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
                         Map<String,Double> lightRecord = (Map<String, Double>) document.get(StudySpot.KEY_LIGHT_RECORD);
-                        spot.setLightRecord(lightRecord);
+                        for(Map.Entry<String, Double> record : lightRecord.entrySet()){
+                            spot.addLightRecord(record.getKey(), record.getValue());
+                        }
                     } else {
                         Log.d(TAG, "No such document");
                     }
@@ -209,13 +213,17 @@ public class MapViewModel extends AndroidViewModel {
          docData.put(StudySpot.KEY_AVG_NOISE, spot.getAvgNoise());
          docData.put(StudySpot.KEY_AVG_LIGHT, spot.getAvgLight());
          docData.put(StudySpot.KEY_ADDRESS, spot.getAddress());
-         ArrayList<Review> reviews = spot.getReviews();
-         Map<String,Double> lightRecord = spot.getLightRecord();
-         Map<String,Double> noiseRecord = spot.getNoiseRecord();
+         Map<String,Double> lightRecord = new HashMap<String,Double>();
+         Map<String,Double> noiseRecord = new HashMap<String, Double>();
+         for(Map.Entry<String,Double> record : spot.getAllLightRecords()){
+             lightRecord.put(record.getKey(),record.getValue());
+         }
 
+        for(Map.Entry<String,Double> record : spot.getAllNoiseRecords()){
+            noiseRecord.put(record.getKey(), record.getValue());
+        }
 
-
-         mDatabase.collection(COLLECTION_STUDYSPOTS).document(docName).set(docData)
+        mDatabase.collection(COLLECTION_STUDYSPOTS).document(docName).set(docData)
             .addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
@@ -230,8 +238,12 @@ public class MapViewModel extends AndroidViewModel {
 
          //save the following data to documents in subcollections of StudySpot
         //should not matter order saved since Firebase will create empty documents/collections.
-        if(!reviews.isEmpty()){
-            saveReview(reviews, spot);
+        if(spot.numberOfReviews() > 0){
+            ArrayList<Review> reviewsToSave = new ArrayList<Review>();
+            for(int i = 0; i < spot.numberOfReviews(); i++){
+                reviewsToSave.add(spot.getReview(i));
+            }
+            saveReview(reviewsToSave, spot);
         }
 
         if(!lightRecord.isEmpty()){
@@ -410,7 +422,7 @@ public class MapViewModel extends AndroidViewModel {
      * or StudySpot.KEY_AVG_RATING for rating
      * spot: the StudySpot to have its database document updated.
      */
-    public void updateSpotAverages(StudySpot spot, String ... fieldNames){
+    public void updateDBSpotAverages(StudySpot spot, String ... fieldNames){
         int i = 0;
         Map<String, Object> data = new HashMap<String, Object>();
         for(String field: fieldNames){

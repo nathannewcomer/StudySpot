@@ -5,6 +5,8 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -14,6 +16,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ListView;
+
+import com.android.studyspot.models.StudySpot;
 
 import java.util.Arrays;
 import java.util.List;
@@ -29,7 +33,7 @@ public class LocationListFragment extends Fragment {
 
     private RecyclerView listView;
     private ImageButton settingsButton;
-    List<String> names;
+    MapViewModel viewModel;
 
 
     public LocationListFragment() {
@@ -47,23 +51,32 @@ public class LocationListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         Log.d(TAG,"onCreate() called by" + TAG);
-
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        viewModel = new ViewModelProvider(requireActivity()).get(MapViewModel.class);
+
         // Inflate the layout for this fragment
         View root = inflater.inflate(R.layout.fragment_list, container, false);
 
         //code for list init
         RecyclerView rvList = (RecyclerView) root.findViewById(R.id.recycler_view);
-        names = Arrays.asList(Address.NAMES);
-        ListAdapter listAdapter = new ListAdapter(names);
+        final ListAdapter listAdapter = new ListAdapter(viewModel.getSpots().getValue());
         rvList.setAdapter(listAdapter);
         rvList.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        viewModel.getSpots().observe(getViewLifecycleOwner(), new Observer<List<StudySpot>>() {
+            @Override
+            public void onChanged(List<StudySpot> studySpots) {
+                listAdapter.setSpots(studySpots);
+                listAdapter.notifyDataSetChanged();
+            }
+        });
 
         //code for settings button
         settingsButton = (ImageButton) root.findViewById(R.id.settings_button);

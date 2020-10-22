@@ -65,14 +65,11 @@ public class MapFragment extends Fragment{
             public void onClick(View v){
                 Intent settingsIntent = new Intent(getActivity().getApplicationContext(), SettingsActivity.class);
                 startActivity(settingsIntent);
+                Log.d(TAG, "viewModel.mSpots = " + viewModel.getSpots().getValue().toString());
             }
         });
 
         Log.d(TAG,"onCreateView() called by" + TAG);
-
-
-        viewModel.retrieveAllStudySpots();
-
 
         return root;
     }

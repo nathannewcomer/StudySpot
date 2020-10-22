@@ -5,6 +5,8 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import com.android.studyspot.models.Review;
 import com.android.studyspot.models.StudySpot;
@@ -28,6 +30,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Set;
@@ -44,7 +47,8 @@ public class MapViewModel extends AndroidViewModel {
     private static final String GEOCODING_REQUEST_OK = "OK";
     public static final String TAG = "MapViewModel";
     private FirebaseFirestore mDatabase;
-    private ArrayList<StudySpot> mSpots;
+    //private ArrayList<StudySpot> mSpots;
+    private MutableLiveData<List<StudySpot>> mStudySpots;
     private RequestQueue mQueue;
 
 
@@ -52,7 +56,8 @@ public class MapViewModel extends AndroidViewModel {
     public MapViewModel(Application application){
         super(application);
         mDatabase = FirebaseFirestore.getInstance();
-        mSpots = new ArrayList<StudySpot>();
+        List<StudySpot> mSpots = new ArrayList<>();
+        mStudySpots = new MutableLiveData<>(mSpots);
         mQueue = Volley.newRequestQueue(application.getApplicationContext());
 
     }
@@ -66,7 +71,7 @@ public class MapViewModel extends AndroidViewModel {
      * Will only work when no StudySpots currently in mSpots.
      */
     public void retrieveAllStudySpots(){
-        if(mSpots!= null && mSpots.size() == 0) {
+        if(mStudySpots != null && mStudySpots.getValue().size() == 0) {
             mDatabase.collection(COLLECTION_STUDYSPOTS).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -102,11 +107,14 @@ public class MapViewModel extends AndroidViewModel {
                             } else {
                                 spot.setAvgLight((double) avgLight);
                             }
-                            mSpots.add(spot);
+                            mStudySpots.getValue().add(spot);
                             retrieveReviews(spot);
                             retrieveNoiseRecord(spot);
                             retrieveLightRecord(spot);
                         }
+
+                        Log.d(TAG, "setValue() called, mStudySpots = " + mStudySpots.getValue().toString());
+                        mStudySpots.setValue(mStudySpots.getValue());
                     } else {
                         Log.d(TAG, "Error retrieving StudySpots: ", task.getException());
                     }
@@ -130,6 +138,8 @@ public class MapViewModel extends AndroidViewModel {
                         Review review = document.toObject(Review.class);
                         spot.addReview(review);
                     }
+
+                    mStudySpots.setValue(mStudySpots.getValue());
                 } else {
                     Log.d(TAG, "Error getting reviews: ", task.getException());
                 }
@@ -162,6 +172,8 @@ public class MapViewModel extends AndroidViewModel {
                     } else {
                         Log.d(TAG, "No such document");
                     }
+
+                    mStudySpots.setValue(mStudySpots.getValue());
                 } else {
                     Log.d(TAG, "get failed with ", task.getException());
                 }
@@ -190,6 +202,8 @@ public class MapViewModel extends AndroidViewModel {
                         for(Map.Entry<String, Double> record : lightRecord.entrySet()){
                             spot.addLightRecord(record.getKey(), record.getValue());
                         }
+
+                        mStudySpots.setValue(mStudySpots.getValue());
                     } else {
                         Log.d(TAG, "No such document");
                     }
@@ -332,14 +346,15 @@ public class MapViewModel extends AndroidViewModel {
 
     }
 
-    public ArrayList<StudySpot> getSpots() {
-        return mSpots;
+    public LiveData<List<StudySpot>> getSpots() {
+        return mStudySpots;
     }
     /*
      *Adds the study spot to be stored in mSpots.
      */
     public void addStudySpot(StudySpot spot){
-        mSpots.add(spot);
+        mStudySpots.getValue().add(spot);
+        mStudySpots.setValue(mStudySpots.getValue());
     }
 
     /*
@@ -386,7 +401,8 @@ public class MapViewModel extends AndroidViewModel {
                                 .getJSONObject("location");
                         GeoPoint coords = new GeoPoint(location.getDouble("lat"), location.getDouble("lng"));
                         StudySpot spot = new StudySpot(name, coords, schedule, address);
-                        mSpots.add(spot);
+                        mStudySpots.getValue().add(spot);
+                        mStudySpots.setValue(mStudySpots.getValue());
                         saveStudySpot(spot);
                     }
                     else if(status != null){

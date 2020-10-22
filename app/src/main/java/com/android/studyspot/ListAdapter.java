@@ -8,7 +8,12 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.android.studyspot.models.StudySpot;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -19,20 +24,20 @@ import java.util.List;
 public class ListAdapter extends RecyclerView.Adapter <ListAdapter.ViewHolder> {
 
     private static final String TAG = "ListAdapter";
+    private List<StudySpot> mSpots;
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView location_name;
         public ViewHolder(View view){
             super(view);
-            location_name = (TextView) view.findViewById(R.id.location_name);
+            location_name = view.findViewById(R.id.location_name);
         }
     }
 
-    private List<String> list;
-
-    public ListAdapter(List<String> arr){
-        list = arr;
+    public ListAdapter(List<StudySpot> spots){
+        mSpots = spots;
     }
+
     @NonNull
     @Override
     public ListAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -48,10 +53,9 @@ public class ListAdapter extends RecyclerView.Adapter <ListAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        String Location = Arrays.asList(Address.NAMES).get(position);
-
-        TextView text = holder.location_name;
-        text.setText(Location);
+        String location = mSpots.get(position).getName();
+        //holder.location_name.setText(location);
+        holder.location_name.setText(location);
         //Log.d(TAG,"onBindViewHolder() called by" + TAG);
 
     }
@@ -59,7 +63,11 @@ public class ListAdapter extends RecyclerView.Adapter <ListAdapter.ViewHolder> {
     @Override
     public int getItemCount() {
         //Log.d(TAG,"getItemCount() called by" + TAG);
-        return Address.NAMES.length;
+        return mSpots.size();
+    }
+
+    public void setSpots(List<StudySpot> spots) {
+        mSpots = spots;
     }
 
 }

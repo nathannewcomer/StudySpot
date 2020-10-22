@@ -2,6 +2,7 @@ package com.android.studyspot;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager.widget.ViewPager;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,6 +16,7 @@ public class MainActivity
     private ViewPager viewPager;
     private TabLayout tabLayout;
     private Toolbar toolbar;
+    private MapViewModel viewModel;
 
 
 
@@ -23,6 +25,8 @@ public class MainActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        viewModel = new ViewModelProvider(this).get(MapViewModel.class);
+        viewModel.retrieveAllStudySpots();
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);

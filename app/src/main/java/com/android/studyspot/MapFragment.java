@@ -134,8 +134,10 @@ public class MapFragment extends Fragment{
         markers = new ArrayList<>();
 
         for (StudySpot spot : spots) {
-            LatLng coords = new LatLng(spot.getCoords().getLatitude(), spot.getCoords().getLongitude());
-            markers.add(googleMap.addMarker(new MarkerOptions().title(spot.getName()).position(coords)));
+            if(spot.getCoords() != null){
+                LatLng coords = new LatLng(spot.getCoords().getLatitude(), spot.getCoords().getLongitude());
+                markers.add(googleMap.addMarker(new MarkerOptions().title(spot.getName()).position(coords)));
+            }
         }
     }
 

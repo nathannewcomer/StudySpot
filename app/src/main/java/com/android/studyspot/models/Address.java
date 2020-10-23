@@ -1,4 +1,4 @@
-package com.android.studyspot;
+package com.android.studyspot.models;
 
 import android.view.View;
 

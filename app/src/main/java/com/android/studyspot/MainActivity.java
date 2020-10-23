@@ -7,6 +7,7 @@ import androidx.viewpager.widget.ViewPager;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.android.studyspot.models.StudySpot;
 import com.google.android.material.tabs.TabLayout;
 
 
@@ -27,6 +28,29 @@ public class MainActivity
 
         viewModel = new ViewModelProvider(this).get(MapViewModel.class);
         viewModel.retrieveAllStudySpots();
+
+        //Use this to show creation in demo to grader
+        /*
+        StudySpot testSpot = new StudySpot();
+        testSpot.setName("Test");
+        viewModel.saveStudySpot(testSpot);
+         */
+
+        //Retrieval demo to grader is pretty obvious, just show them the location_list tab
+
+        //Use this to show updating in demo to grader
+        /*
+        StudySpot testSpot = new StudySpot();
+        testSpot.setAvgRating(1.0);
+        viewModel.updateDBSpotAverages(testSpot, StudySpot.KEY_AVG_RATING);
+         */
+
+        //Use this to show deletion in demo to grader
+        /*
+        StudySpot testSpot = new StudySpot();
+        testSpot.setName("Test");
+        viewModel.deleteStudySpot(testSpot);
+         */
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);

@@ -170,7 +170,7 @@ public class MapViewModel extends AndroidViewModel {
                             spot.addNoiseRecord(record.getKey(), record.getValue());
                         }
                     } else {
-                        Log.d(TAG, "No such document");
+                        //Log.d(TAG, "No such document");
                     }
 
                     mStudySpots.setValue(mStudySpots.getValue());
@@ -429,6 +429,39 @@ public class MapViewModel extends AndroidViewModel {
             }
         });
         mQueue.add(jsonObjectRequest);
+    }
+
+    public void deleteStudySpot(final StudySpot spot){
+        mDatabase.collection(COLLECTION_STUDYSPOTS).document(spot.getDocumentName())
+                .delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "Spot deleted");
+                        List<StudySpot> spots = mStudySpots.getValue();
+                        String otherSpotName;
+                        int pos = -1;
+                        for(int i = 0; i < spots.size(); i++){
+                            otherSpotName = spots.get(i).getName();
+                            if(spot.getName().compareTo(otherSpotName) == 0){
+                                pos = i;
+                                break;
+                            }
+                        }
+                        if(pos != -1){
+                            spots.remove(pos);
+                            mStudySpots.setValue(spots);
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error deleting spot", e);
+                    }
+                });
+
     }
 
     /*

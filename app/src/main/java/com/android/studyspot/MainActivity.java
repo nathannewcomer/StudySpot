@@ -30,8 +30,6 @@ public class MainActivity
         viewModel.retrieveSpotsFromRepository();
 
 
-
-
         //Use this to show creation in demo to grader
         /*
         StudySpot testSpot = new StudySpot();

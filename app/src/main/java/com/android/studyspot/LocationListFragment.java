@@ -1,9 +1,11 @@
 package com.android.studyspot;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -12,6 +14,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -34,7 +39,9 @@ public class LocationListFragment extends Fragment {
 
     private RecyclerView listView;
     private ImageButton settingsButton;
+    private ListAdapter mAdapter;
     MapViewModel viewModel;
+
 
 
     public LocationListFragment() {
@@ -62,20 +69,28 @@ public class LocationListFragment extends Fragment {
 
         viewModel = new ViewModelProvider(requireActivity()).get(MapViewModel.class);
 
+        /*
+         *Only show the options menu for sorting spots if at or above API Level 24(Version N)
+         * because it is required for List.sort()
+         */
+        if(android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
+            setHasOptionsMenu(true);
+        }
+
         // Inflate the layout for this fragment
         View root = inflater.inflate(R.layout.fragment_list, container, false);
 
         //code for list init
         RecyclerView rvList = (RecyclerView) root.findViewById(R.id.recycler_view);
-        final ListAdapter listAdapter = new ListAdapter(viewModel.getSpots().getValue());
-        rvList.setAdapter(listAdapter);
+        mAdapter = new ListAdapter(viewModel.getSpots().getValue());
+        rvList.setAdapter(mAdapter);
         rvList.setLayoutManager(new LinearLayoutManager(getContext()));
 
         viewModel.getSpots().observe(getViewLifecycleOwner(), new Observer<List<StudySpot>>() {
             @Override
             public void onChanged(List<StudySpot> studySpots) {
-                listAdapter.setSpots(studySpots);
-                listAdapter.notifyDataSetChanged();
+                mAdapter.setSpots(studySpots);
+                mAdapter.notifyDataSetChanged();
             }
         });
 
@@ -119,5 +134,45 @@ public class LocationListFragment extends Fragment {
         Log.d(TAG, "onDestroy() called by" + TAG);
     }
 
+    @Override
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater){
+        inflater.inflate(R.menu.location_menu, menu);
+    }
+
+
+
+    @Override
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.loc_sort_name:
+                mAdapter.sortSpots(ListAdapter.SortOption.NAME);
+                mAdapter.notifyDataSetChanged();
+                return true;
+            case R.id.loc_sort_rating:
+                mAdapter.sortSpots(ListAdapter.SortOption.RATING);
+                mAdapter.notifyDataSetChanged();
+                return true;
+            case R.id.loc_sort_bright:
+                mAdapter.sortSpots(ListAdapter.SortOption.BRIGHT);
+                mAdapter.notifyDataSetChanged();
+                return true;
+            case R.id.loc_sort_dark:
+                mAdapter.sortSpots(ListAdapter.SortOption.DARK);
+                mAdapter.notifyDataSetChanged();
+                return true;
+            case R.id.loc_sort_loud:
+                mAdapter.sortSpots(ListAdapter.SortOption.LOUD);
+                mAdapter.notifyDataSetChanged();
+                return true;
+            case R.id.loc_sort_quiet:
+                mAdapter.sortSpots(ListAdapter.SortOption.QUIET);
+                mAdapter.notifyDataSetChanged();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
 }

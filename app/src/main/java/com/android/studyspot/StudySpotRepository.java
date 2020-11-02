@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 
 //TODO keep this class as a backup in case the service version doesn't work
@@ -57,7 +58,6 @@ public class StudySpotRepository {
     public StudySpotRepository(Context context) {
         mDatabase = FirebaseFirestore.getInstance();
         mQueue = Volley.newRequestQueue(context);
-
     }
 
     /*
@@ -103,6 +103,7 @@ public class StudySpotRepository {
                                 } else {
                                     spot.setAvgLight((double) avgLight);
                                 }
+
                                 spotList.add(spot);
 
                                 retrieveReviews(spot, spotHolder);

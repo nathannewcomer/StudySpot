@@ -11,8 +11,6 @@ import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
@@ -98,16 +96,14 @@ public class MapFragment extends Fragment{
                 googleMap = mMap;
                 enableMyLocation();
                 setMarkers(viewModel.getSpots().getValue());
-            }
-        });
 
-        // add observer to studySpots
-        viewModel.getSpots().observe(getViewLifecycleOwner(), new Observer<List<StudySpot>>() {
-            @Override
-            public void onChanged(List<StudySpot> studySpots) {
-                if(googleMap != null){
-                    setMarkers(studySpots);
-                }
+                // add observer to studySpots
+                viewModel.getSpots().observe(getViewLifecycleOwner(), new Observer<List<StudySpot>>() {
+                    @Override
+                    public void onChanged(List<StudySpot> studySpots) {
+                        setMarkers(studySpots);
+                    }
+                });
             }
         });
 
@@ -145,11 +141,10 @@ public class MapFragment extends Fragment{
     // create markers from StudySpot objects and put them into a list
     private void setMarkers(List<StudySpot> spots) {
         markers = new ArrayList<>();
+
         for (StudySpot spot : spots) {
-            if(spot.getCoords() != null){
-                LatLng coords = new LatLng(spot.getCoords().getLatitude(), spot.getCoords().getLongitude());
-                markers.add(googleMap.addMarker(new MarkerOptions().title(spot.getName()).position(coords)));
-            }
+            LatLng coords = new LatLng(spot.getCoords().getLatitude(), spot.getCoords().getLongitude());
+            markers.add(googleMap.addMarker(new MarkerOptions().title(spot.getName()).position(coords)));
         }
     }
 
@@ -177,4 +172,5 @@ public class MapFragment extends Fragment{
                 break;
         }
     }
+
 }

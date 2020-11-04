@@ -1,10 +1,15 @@
 package com.android.studyspot;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -47,11 +52,14 @@ import java.util.List;
 
 public class MapFragment extends Fragment{
     private static final String TAG = "MapFragment";
+    private final static int REQUEST_FINE_LOC_PERM = 4;
+    private final static String PERM_FINE_LOC = Manifest.permission.ACCESS_FINE_LOCATION;
+
     private MapViewModel viewModel;
     private MapView mMapView;
     private GoogleMap googleMap;
     private ImageButton settingsButton;
-    List<Marker> markers;
+    private List<Marker> markers;
 
 
 
@@ -88,6 +96,7 @@ public class MapFragment extends Fragment{
             @Override
             public void onMapReady(GoogleMap mMap) {
                 googleMap = mMap;
+                enableMyLocation();
                 setMarkers(viewModel.getSpots().getValue());
             }
         });
@@ -144,5 +153,28 @@ public class MapFragment extends Fragment{
         }
     }
 
+    private void enableMyLocation() {
+        if (ContextCompat.checkSelfPermission(requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION)  == PackageManager.PERMISSION_GRANTED) {
+            if (googleMap != null) {
+                googleMap.setMyLocationEnabled(true);
+            }
+        } else {
+            //TODO explain rationale for permissions
+            requestPermissions(new String[]{PERM_FINE_LOC}, REQUEST_FINE_LOC_PERM);
+        }
+    }
 
+    @Override
+    public void onRequestPermissionsResult (int requestCode, String[] permissions,
+                                            int[] grantResults) {
+        switch(requestCode) {
+            case REQUEST_FINE_LOC_PERM:
+                boolean granted = false;
+                if (grantResults.length == 1) {
+                    granted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+                }
+                break;
+        }
+    }
 }

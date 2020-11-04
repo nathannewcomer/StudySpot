@@ -19,5 +19,8 @@
         <item android:id = "@+id/loc_sort_dark"
             android:title = "Sort by darkest spot"
             app:showAsAction = "never"/>
+        <item android:id ="@+id/loc_sort_distance"
+                android:title = "Sort by distance"
+                app:showAsAction="never"/>
 
 </menu>

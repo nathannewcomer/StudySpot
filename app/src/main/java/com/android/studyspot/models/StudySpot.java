@@ -1,5 +1,7 @@
 package com.android.studyspot.models;
 
+import android.location.Location;
+
 import com.google.firebase.firestore.GeoPoint;
 
 import java.util.ArrayList;
@@ -18,6 +20,7 @@ public class StudySpot {
     public static final String KEY_LIGHT_RECORD = "light_record";
     public static final String KEY_NOISE_RECORD = "noise_record";
 
+    public static final float DISTANCE_UNKNOWN = -1;
 
     private String mName;
     private GeoPoint mCoords;
@@ -25,6 +28,7 @@ public class StudySpot {
     private double mAvgRating, mAvgNoise, mAvgLight;
     private String mAddress;
     private ArrayList<Review> mReviews;
+    private float mDistanceToUser;
 
     //maybe consider making these their own classes?
     private Map<String, Double> mLightRecord;
@@ -42,6 +46,7 @@ public class StudySpot {
         mReviews = new ArrayList<Review>();
         mLightRecord = new HashMap<>();
         mNoiseRecord = new HashMap<>();
+        mDistanceToUser = DISTANCE_UNKNOWN;
     }
 
     public StudySpot(String name, GeoPoint coords, String schedulePath, String address) {
@@ -55,6 +60,7 @@ public class StudySpot {
         mReviews = new ArrayList<Review>();
         mLightRecord = new HashMap<>();
         mNoiseRecord = new HashMap<>();
+        mDistanceToUser = DISTANCE_UNKNOWN;
     }
 
     public StudySpot(String name, GeoPoint coords, String schedulePath, String address, double avgRating,
@@ -69,6 +75,7 @@ public class StudySpot {
         mReviews = new ArrayList<Review>();
         mLightRecord = new HashMap<>();
         mNoiseRecord = new HashMap<>();
+        mDistanceToUser = DISTANCE_UNKNOWN;
     }
 
     public String getName() {
@@ -250,6 +257,20 @@ public class StudySpot {
 
     public Set<Map.Entry<String, Double>> getAllNoiseRecords(){
         return mNoiseRecord.entrySet();
+    }
+
+
+    public float getDistanceToUser() {
+        return mDistanceToUser;
+    }
+
+    public void updateDistanceToUser(Location userLocation){
+        if(userLocation != null){
+            Location spotLocation = new Location("");
+            spotLocation.setLatitude(mCoords.getLatitude());
+            spotLocation.setLongitude(mCoords.getLongitude());
+            mDistanceToUser = userLocation.distanceTo(spotLocation);
+        }
     }
 
 

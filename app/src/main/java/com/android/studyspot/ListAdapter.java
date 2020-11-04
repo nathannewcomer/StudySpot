@@ -101,6 +101,10 @@ public class ListAdapter extends RecyclerView.Adapter <ListAdapter.ViewHolder> {
                 holder.location_details.setText(String.format("Light: %.2f lux", light));
                 break;
             case DISTANCE:
+                float distance = spot.getDistanceToUser();
+                if(distance != StudySpot.DISTANCE_UNKNOWN){
+                    holder.location_details.setText(String.format("Distance: %.0f m", distance));
+                }
                 break;
         }
 
@@ -116,7 +120,6 @@ public class ListAdapter extends RecyclerView.Adapter <ListAdapter.ViewHolder> {
         mSpots = spots;
     }
 
-    //TODO implement distance sort
     /*
      *Sorts mSpots by the SortOption passed. Only works on Android N or later.
      * Choosing NAME sorts by StudySpot name lexographically. Choosing RATING sorts by
@@ -182,6 +185,12 @@ public class ListAdapter extends RecyclerView.Adapter <ListAdapter.ViewHolder> {
                 break;
             case DISTANCE:
                 chosenOption = SortOption.DISTANCE;
+                mSpots.sort(new Comparator<StudySpot>() {
+                    @Override
+                    public int compare(StudySpot o1, StudySpot o2) {
+                        return Float.compare(o1.getDistanceToUser(), o2.getDistanceToUser());
+                    }
+                });
                 break;
         }
     }

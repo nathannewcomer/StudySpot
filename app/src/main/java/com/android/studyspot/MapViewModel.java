@@ -1,6 +1,7 @@
 package com.android.studyspot;
 
 import android.app.Application;
+import android.location.Location;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -25,7 +26,7 @@ public class MapViewModel extends AndroidViewModel {
     public static final String TAG = "MapViewModel";
     private MutableLiveData<List<StudySpot>> mStudySpots;
     private StudySpotRepository mRepo;
-    boolean mServiceBound = false;
+    private Location mCurrentLocation = null;
 
 
 
@@ -36,11 +37,6 @@ public class MapViewModel extends AndroidViewModel {
         mStudySpots = new MutableLiveData<List<StudySpot>>();
         mStudySpots.setValue(list);
         mRepo = new StudySpotRepository(application.getApplicationContext());
-    }
-
-    @Override
-    protected void onCleared(){
-
     }
 
 
@@ -60,7 +56,7 @@ public class MapViewModel extends AndroidViewModel {
         mRepo.saveStudySpot(spot);
     }
 
-    public LiveData<List<StudySpot>> getSpots() {
+    public MutableLiveData<List<StudySpot>> getSpots() {
         return mStudySpots;
     }
 
@@ -116,6 +112,15 @@ public class MapViewModel extends AndroidViewModel {
         if(fieldNames.length > 0 ){
             mRepo.updateDBSpotAverages(spot, fieldNames);
         }
+    }
+
+
+    public Location getCurrentLocation() {
+        return mCurrentLocation;
+    }
+
+    public void setCurrentLocation(Location currentLocation) {
+        mCurrentLocation = currentLocation;
     }
 
 

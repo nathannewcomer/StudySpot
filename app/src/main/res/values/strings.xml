@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">StudySpot</string>
     <string name="hello_blank_fragment">Hello Blank</string>
+    <string name="current_rating">Current Rating</string>
+    <string name="noise_rating">Noise Level</string>
+    <string name="light_rating">Light Level</string>
+    <string name="write_review">WRITE REVIEW</string>
+
 </resources>

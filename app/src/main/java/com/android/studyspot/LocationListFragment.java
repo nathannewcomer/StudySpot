@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -28,9 +29,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.android.studyspot.models.StudySpot;
-import com.android.studyspot.services.SpotLocationService;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
@@ -45,7 +46,7 @@ import java.util.List;
  * Use the {@link LocationListFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class LocationListFragment extends Fragment {
+public class LocationListFragment extends Fragment implements ListAdapter.ListItemClickListener {
 
     private static final String TAG = "LocationListFragment";
     private final static int REQUEST_FINE_LOC_PERM = 4;
@@ -96,7 +97,7 @@ public class LocationListFragment extends Fragment {
 
         //code for list init
         RecyclerView rvList = (RecyclerView) root.findViewById(R.id.recycler_view);
-        mAdapter = new ListAdapter(viewModel.getSpots().getValue());
+        mAdapter = new ListAdapter(viewModel.getSpots().getValue(), this);
         rvList.setAdapter(mAdapter);
         rvList.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -207,6 +208,7 @@ public class LocationListFragment extends Fragment {
     }
 
     @Override
+
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void onRequestPermissionsResult (int requestCode, String[] permissions,
                                             int[] grantResults){
@@ -247,5 +249,19 @@ public class LocationListFragment extends Fragment {
     }
 
 
+
+    public void onListItemClick(int position) {
+
+        FragmentManager fm = getParentFragmentManager();
+        Fragment fragment = fm.findFragmentById(R.id.detail_fragment);
+        if (fragment == null) {
+            fragment = new DetailsFragment();
+            fm.beginTransaction()
+                    .add(R.id.detail_fragment, fragment)
+                    .commit();
+        }
+        Log.d(TAG, "onClick() called by" + TAG);
+
+    }
 
 }

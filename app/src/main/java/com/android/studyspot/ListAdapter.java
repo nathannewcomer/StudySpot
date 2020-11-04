@@ -8,6 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.lifecycle.LiveData;
@@ -25,7 +27,12 @@ import java.util.List;
 
 public class ListAdapter extends RecyclerView.Adapter <ListAdapter.ViewHolder> {
 
+    interface ListItemClickListener{
+        void onListItemClick(int position);
+    }
     private static final String TAG = "ListAdapter";
+    final private ListItemClickListener mOnClickListener;
+
 
     //TODO define this later when figuring out distance stuff
     //private static final Double DISTANCE_EPSILON
@@ -49,28 +56,39 @@ public class ListAdapter extends RecyclerView.Adapter <ListAdapter.ViewHolder> {
     private SortOption chosenOption;
     private List<StudySpot> mSpots;
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public TextView location_name;
         public TextView location_details;
+
         public ViewHolder(View view){
             super(view);
+            view.setOnClickListener(this);
             location_name = view.findViewById(R.id.location_name);
             location_details = view.findViewById(R.id.location_details);
         }
+
+        @Override
+        public void onClick(View view) {
+            int position = getAdapterPosition();
+            mOnClickListener.onListItemClick(position);
+
+        }
     }
 
-    public ListAdapter(List<StudySpot> spots){
+    public ListAdapter(List<StudySpot> spots, ListItemClickListener listItemClickListener){
         mSpots = spots;
         chosenOption = SortOption.NAME;
+        this.mOnClickListener = listItemClickListener;
     }
 
     @NonNull
     @Override
-    public ListAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ListAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)   {
         Context con = parent.getContext();
         //create Layout inflator from context
         LayoutInflater layoutInflater = LayoutInflater.from(con);
         View location = layoutInflater.inflate(R.layout.location_item, parent, false);
+
         ViewHolder holder = new ViewHolder(location);
         //Log.d(TAG,"onCreateViewHolder() called by" + TAG);
 

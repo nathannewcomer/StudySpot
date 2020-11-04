@@ -252,14 +252,15 @@ public class LocationListFragment extends Fragment implements ListAdapter.ListIt
 
     public void onListItemClick(int position) {
 
-        FragmentManager fm = getParentFragmentManager();
+        FragmentManager fm = getChildFragmentManager();
         Fragment fragment = fm.findFragmentById(R.id.detail_fragment);
         if (fragment == null) {
             fragment = new DetailsFragment();
             fm.beginTransaction()
-                    .add(R.id.detail_fragment, fragment)
+                    .add(R.id.detail_container, fragment)
                     .commit();
         }
+
         Log.d(TAG, "onClick() called by" + TAG);
 
     }

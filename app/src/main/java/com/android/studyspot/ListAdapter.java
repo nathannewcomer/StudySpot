@@ -128,6 +128,9 @@ public class ListAdapter extends RecyclerView.Adapter <ListAdapter.ViewHolder> {
 
     }
 
+    public StudySpot getStudySpot(int position){
+        return mSpots.get(position);
+    }
     @Override
     public int getItemCount() {
         //Log.d(TAG,"getItemCount() called by" + TAG);
@@ -137,6 +140,7 @@ public class ListAdapter extends RecyclerView.Adapter <ListAdapter.ViewHolder> {
     public void setSpots(List<StudySpot> spots) {
         mSpots = spots;
     }
+
 
     /*
      *Sorts mSpots by the SortOption passed. Only works on Android N or later.

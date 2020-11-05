@@ -1,25 +1,18 @@
 package com.android.studyspot;
 
 import android.Manifest;
-import android.content.ComponentName;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.os.IBinder;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -27,18 +20,20 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ListView;
-import android.widget.Toast;
-
 import com.android.studyspot.models.StudySpot;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -56,6 +51,11 @@ public class LocationListFragment extends Fragment implements ListAdapter.ListIt
     private ImageButton settingsButton;
     private ListAdapter mAdapter;
     private MapViewModel viewModel;
+    private GoogleMap googleMap;
+    private View root;
+    private View details;
+    private Marker marker;
+    private MapView mapView;
 
     private FusedLocationProviderClient mFusedLocationClient;
 
@@ -93,7 +93,31 @@ public class LocationListFragment extends Fragment implements ListAdapter.ListIt
         }
 
         // Inflate the layout for this fragment
-        View root = inflater.inflate(R.layout.fragment_list, container, false);
+        root = inflater.inflate(R.layout.fragment_list, container, false);
+        details = root.findViewById(R.id.detail_container);
+        Button mReview = root.findViewById(R.id.button_review);
+        ImageButton back = root.findViewById(R.id.search_back);
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                details.setVisibility(View.GONE);
+            }
+        });
+        details.setVisibility(View.GONE);
+        mReview.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent reviewIntent = new Intent(getActivity().getApplicationContext(), ReviewActivity.class);
+                startActivity(reviewIntent);
+            }
+        });
+
+        //map initialize
+        mapView = root.findViewById(R.id.small_map_container);
+        mapView.onCreate(savedInstanceState);
+        mapView.onResume(); //force maps to start
+
+
 
         //code for list init
         RecyclerView rvList = (RecyclerView) root.findViewById(R.id.recycler_view);
@@ -248,18 +272,36 @@ public class LocationListFragment extends Fragment implements ListAdapter.ListIt
         }
     }
 
+    public void setDataForDetailsPage(int position){
+        StudySpot studySpot = mAdapter.getStudySpot(position);
 
+    }
 
     public void onListItemClick(int position) {
 
-        FragmentManager fm = getChildFragmentManager();
-        Fragment fragment = fm.findFragmentById(R.id.detail_fragment);
-        if (fragment == null) {
-            fragment = new DetailsFragment();
-            fm.beginTransaction()
-                    .add(R.id.detail_container, fragment)
-                    .commit();
-        }
+//        FragmentManager fm = getChildFragmentManager();
+//        Fragment fragment = fm.findFragmentById(R.id.detail_fragment);
+//        if (fragment == null) {
+//            fragment = new DetailsFragment();
+//            fm.beginTransaction()
+//                    .add(R.id.detail_container, fragment)
+//                    .commit();
+//        }
+        final StudySpot spot = mAdapter.getStudySpot(position);
+
+        mapView.getMapAsync(new OnMapReadyCallback() {
+            @Override
+            public void onMapReady(GoogleMap googleMap) {
+                LatLng coords = new LatLng(spot.getCoords().getLatitude(), spot.getCoords().getLongitude());
+                googleMap.addMarker(new MarkerOptions().title(spot.getName()).position(coords));
+
+              //TODO add observer for individual study spot
+            }
+        });
+        details.setVisibility(View.VISIBLE);
+
+
+
 
         Log.d(TAG, "onClick() called by" + TAG);
 

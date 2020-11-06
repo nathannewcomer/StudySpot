@@ -1,6 +1,7 @@
 package com.android.studyspot;
 
 import android.Manifest;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -22,6 +23,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.Toast;
+
 import com.android.studyspot.models.StudySpot;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationRequest;
@@ -51,12 +54,16 @@ public class LocationListFragment extends Fragment implements ListAdapter.ListIt
     private ImageButton settingsButton;
     private ListAdapter mAdapter;
     private MapViewModel viewModel;
+
     private GoogleMap googleMap;
     private View root;
     private View details;
     private Marker marker;
     private MapView mapView;
+    private Button mLightMeasButton;
+    private Button mNoiseMeasButton;
 
+    private StudySpot selectedSpot;
     private FusedLocationProviderClient mFusedLocationClient;
 
     public LocationListFragment() {
@@ -143,6 +150,34 @@ public class LocationListFragment extends Fragment implements ListAdapter.ListIt
            }
         });
         Log.d(TAG,"onCreateView() called by" + TAG);
+
+        mLightMeasButton = (Button) root.findViewById(R.id.button_take_light_measurement);
+        final ContextWrapper contextWrapper = new ContextWrapper(requireContext());
+        Log.d(TAG,requireContext().getExternalFilesDir(null).getAbsolutePath());
+        mLightMeasButton.setOnClickListener( new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                String greetingText = String.format(getString(R.string.pre_measured_average_light),
+                        LightMeasurer.MEASURING_TIME_MS/1000);
+                Toast.makeText(requireContext(), greetingText,Toast.LENGTH_LONG).show();
+                final LightMeasurer meas = new LightMeasurer(contextWrapper, selectedSpot);
+                Thread lightMeasThread = new Thread(meas,"LightMeasThread");
+                meas.isFinished().observe(requireActivity(), new Observer<Boolean>() {
+                    @Override
+                    public void onChanged(Boolean finished) {
+                        if(finished){
+                            viewModel.updateDBSpotLight(selectedSpot);
+                            String text = String.format(getString(R.string.measured_average_light),
+                                    meas.getAverageLight());
+                            Toast.makeText(requireContext(), text ,Toast.LENGTH_LONG).show();
+                            meas.isFinished().removeObservers(requireActivity());
+                        }
+                    }
+                });
+                lightMeasThread.start();
+            }
+        });
+
 
         return root;
     }
@@ -287,13 +322,13 @@ public class LocationListFragment extends Fragment implements ListAdapter.ListIt
 //                    .add(R.id.detail_container, fragment)
 //                    .commit();
 //        }
-        final StudySpot spot = mAdapter.getStudySpot(position);
+        selectedSpot = mAdapter.getStudySpot(position);
 
         mapView.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(GoogleMap googleMap) {
-                LatLng coords = new LatLng(spot.getCoords().getLatitude(), spot.getCoords().getLongitude());
-                googleMap.addMarker(new MarkerOptions().title(spot.getName()).position(coords));
+                LatLng coords = new LatLng(selectedSpot.getCoords().getLatitude(), selectedSpot.getCoords().getLongitude());
+                googleMap.addMarker(new MarkerOptions().title(selectedSpot.getName()).position(coords));
 
               //TODO add observer for individual study spot
             }

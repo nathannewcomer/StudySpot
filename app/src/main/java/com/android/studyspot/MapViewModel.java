@@ -114,6 +114,19 @@ public class MapViewModel extends AndroidViewModel {
         }
     }
 
+    /*Helper method to update the average light and light record for a spot in the database
+     */
+    public void updateDBSpotLight(StudySpot spot){
+        updateDBSpotAverages(spot, new String[]{ StudySpot.KEY_AVG_LIGHT} );
+        mRepo.saveLightRecord(spot);
+    }
+
+    /*Helper method to update the average noise and noise record for a spot in the database
+     */
+    public void updateDBSpotNoise(StudySpot spot){
+        updateDBSpotAverages(spot, new String[]{ StudySpot.KEY_AVG_NOISE} );
+        mRepo.saveNoiseRecord(spot);
+    }
 
     public Location getCurrentLocation() {
         return mCurrentLocation;

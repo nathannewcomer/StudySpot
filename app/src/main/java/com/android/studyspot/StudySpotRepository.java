@@ -236,15 +236,7 @@ public class StudySpotRepository {
         docData.put(StudySpot.KEY_AVG_NOISE, spot.getAvgNoise());
         docData.put(StudySpot.KEY_AVG_LIGHT, spot.getAvgLight());
         docData.put(StudySpot.KEY_ADDRESS, spot.getAddress());
-        Map<String, Double> lightRecord = new HashMap<String, Double>();
-        Map<String, Double> noiseRecord = new HashMap<String, Double>();
-        for (Map.Entry<String, Double> record : spot.getAllLightRecords()) {
-            lightRecord.put(record.getKey(), record.getValue());
-        }
 
-        for (Map.Entry<String, Double> record : spot.getAllNoiseRecords()) {
-            noiseRecord.put(record.getKey(), record.getValue());
-        }
 
         mDatabase.collection(COLLECTION_STUDYSPOTS).document(docName).set(docData)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -260,6 +252,9 @@ public class StudySpotRepository {
 
         //save the following data to documents in subcollections of StudySpot
         //should not matter order saved since Firebase will create empty documents/collections.
+        saveLightRecord(spot);
+        saveNoiseRecord(spot);
+
         if (spot.numberOfReviews() > 0) {
             ArrayList<Review> reviewsToSave = new ArrayList<Review>();
             for (int i = 0; i < spot.numberOfReviews(); i++) {
@@ -267,12 +262,7 @@ public class StudySpotRepository {
             }
             saveReview(reviewsToSave, spot);
         }
-        if (!lightRecord.isEmpty()) {
-            saveLightRecord(lightRecord, spot);
-        }
-        if (!noiseRecord.isEmpty()) {
-            saveNoiseRecord(noiseRecord, spot);
-        }
+
     }
 
 
@@ -301,13 +291,19 @@ public class StudySpotRepository {
     }
 
     /*
-     *Saves the light record to the firebase database.
-     *spot is the StudySpot that the light_record has been measured from
+     *Saves spot's lightRecord to the database
      */
-    public void saveLightRecord(Map<String, Double> light_record, StudySpot spot) {
+    public void saveLightRecord(StudySpot spot) {
+        if(spot.numberOfLightRecords() == 0){
+            return;
+        }
+        Map<String, Double> lightRecord = new HashMap<String, Double>();
+        for (Map.Entry<String, Double> record : spot.getAllLightRecords()) {
+            lightRecord.put(record.getKey(), record.getValue());
+        }
+
         Map<String, Object> docData = new HashMap<>();
-        //StudySpot.KEY_LIGHT_RECORD is the key for the entire map in its document
-        docData.put(StudySpot.KEY_LIGHT_RECORD, light_record);
+        docData.put(StudySpot.KEY_LIGHT_RECORD, lightRecord);
         StringBuilder builder = new StringBuilder(COLLECTION_STUDYSPOTS);
         builder.append("/");
         builder.append(spot.getDocumentName());
@@ -329,12 +325,20 @@ public class StudySpotRepository {
     }
 
     /*
-     *Saves the noise record to the firebase database. spot is the StudySpot that the
-     * noise_record has been measured from
+     *Saves the Spot's noiseRecord to the database
      */
-    public void saveNoiseRecord(Map<String, Double> noise_record, StudySpot spot) {
+    public void saveNoiseRecord(StudySpot spot) {
+        if(spot.numberOfNoiseRecords() == 0){
+            return;
+        }
+
+        Map<String, Double> noiseRecord = new HashMap<String, Double>();
+        for (Map.Entry<String, Double> record : spot.getAllNoiseRecords()) {
+            noiseRecord.put(record.getKey(), record.getValue());
+        }
         Map<String, Object> docData = new HashMap<>();
-        docData.put(StudySpot.KEY_NOISE_RECORD, noise_record);
+        docData.put(StudySpot.KEY_NOISE_RECORD, noiseRecord);
+
         StringBuilder builder = new StringBuilder(COLLECTION_STUDYSPOTS);
         builder.append("/");
         builder.append(spot.getDocumentName());
@@ -449,6 +453,7 @@ public class StudySpotRepository {
                     }
                 });
     }
+
 
 
     /*

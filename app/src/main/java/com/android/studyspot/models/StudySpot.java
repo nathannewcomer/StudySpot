@@ -22,17 +22,20 @@ public class StudySpot {
 
     public static final float DISTANCE_UNKNOWN = -1;
 
+    //data that should be saved in the database
     private String mName;
     private GeoPoint mCoords;
     private String mSchedule;
     private double mAvgRating, mAvgNoise, mAvgLight;
     private String mAddress;
     private ArrayList<Review> mReviews;
-    private float mDistanceToUser;
-
-    //maybe consider making these their own classes?
     private Map<String, Double> mLightRecord;
     private Map<String, Double> mNoiseRecord;
+
+    //data that should not be saved in the database
+    private float mDistanceToUser;
+
+
 
 
     public StudySpot() {

@@ -1,4 +1,4 @@
-package com.android.studyspot;
+    package com.android.studyspot;
 
 import android.Manifest;
 import android.content.ContextWrapper;
@@ -23,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.studyspot.models.StudySpot;
@@ -48,6 +49,8 @@ public class LocationListFragment extends Fragment implements ListAdapter.ListIt
 
     private static final String TAG = "LocationListFragment";
     private final static int REQUEST_FINE_LOC_PERM = 4;
+    private static final int REQUEST_RECORD_AUDIO_PERM = 200;
+    private final static String PERM_REC_AUDIO = Manifest.permission.RECORD_AUDIO;
     private final static String PERM_FINE_LOC = Manifest.permission.ACCESS_FINE_LOCATION;
 
     private RecyclerView listView;
@@ -62,9 +65,13 @@ public class LocationListFragment extends Fragment implements ListAdapter.ListIt
     private MapView mapView;
     private Button mLightMeasButton;
     private Button mNoiseMeasButton;
+    private TextView mLightLevel;
+    private TextView mNoiseLevel;
 
     private StudySpot selectedSpot;
     private FusedLocationProviderClient mFusedLocationClient;
+
+    private boolean acceptRecordAudioPerm = false;
 
     public LocationListFragment() {
         // Required empty public constructor
@@ -151,9 +158,10 @@ public class LocationListFragment extends Fragment implements ListAdapter.ListIt
         });
         Log.d(TAG,"onCreateView() called by" + TAG);
 
+        mLightLevel = (TextView) root.findViewById(R.id.details_light_level);
+
         mLightMeasButton = (Button) root.findViewById(R.id.button_take_light_measurement);
         final ContextWrapper contextWrapper = new ContextWrapper(requireContext());
-        Log.d(TAG,requireContext().getExternalFilesDir(null).getAbsolutePath());
         mLightMeasButton.setOnClickListener( new View.OnClickListener(){
             @Override
             public void onClick(View v){
@@ -170,11 +178,44 @@ public class LocationListFragment extends Fragment implements ListAdapter.ListIt
                             String text = String.format(getString(R.string.measured_average_light),
                                     meas.getAverageLight());
                             Toast.makeText(requireContext(), text ,Toast.LENGTH_LONG).show();
+                            String lightLevelText = String.format(getString(R.string.measured_average_light),
+                                    selectedSpot.getAvgLight());
+                            mLightLevel.setText(lightLevelText);
                             meas.isFinished().removeObservers(requireActivity());
                         }
                     }
                 });
                 lightMeasThread.start();
+            }
+        });
+
+        mNoiseLevel = (TextView) root.findViewById(R.id.details_noise_level);
+        mNoiseMeasButton = (Button) root.findViewById(R.id.button_take_noise_measurement);
+        mNoiseMeasButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                if(ContextCompat.checkSelfPermission(requireContext(),PERM_REC_AUDIO)
+                        == PackageManager.PERMISSION_GRANTED){
+                        final NoiseMeasurer meas = new NoiseMeasurer(selectedSpot);
+                        Thread noiseMeasThread = new Thread(meas,"NoiseMeasThread");
+                        meas.isFinished().observe(requireActivity(), new Observer<Boolean>() {
+                            @Override
+                            public void onChanged(Boolean finished) {
+                                if(finished){
+                                    viewModel.updateDBSpotNoise(selectedSpot);
+                                    String text = String.format(getString(R.string.measured_average_noise),
+                                            meas.getAverageNoise());
+                                    Toast.makeText(requireContext(), text ,Toast.LENGTH_LONG).show();
+                                    mNoiseLevel.setText(text);
+                                    meas.isFinished().removeObservers(requireActivity());
+                                }
+                            }
+                        });
+                        noiseMeasThread.start();
+                }
+                else{
+                    requestPermissions(new String[]{PERM_REC_AUDIO}, REQUEST_RECORD_AUDIO_PERM);
+                }
             }
         });
 
@@ -286,9 +327,11 @@ public class LocationListFragment extends Fragment implements ListAdapter.ListIt
                                 });
                     }
                 }
-
-
                 break;
+            case REQUEST_RECORD_AUDIO_PERM:
+                if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    //TODO run the noise measurement thread stuff
+                }
         }
     }
 

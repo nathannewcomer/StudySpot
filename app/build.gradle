@@ -31,6 +31,9 @@ android {
 }
 
 dependencies {
+    implementation files('libs\\TarsosDSP-Android-latest.jar')
+    def work_version = "2.4.0"
+
     implementation fileTree(dir: "libs", include: ["*.jar"])
     //firebase stuff
     //don't specify dependencies for firebase when using the bom
@@ -42,6 +45,11 @@ dependencies {
     //google play services
     implementation 'com.google.android.gms:play-services-maps:17.0.0'
     implementation 'com.google.android.gms:play-services-location:17.1.0'
+
+    //work manager
+    implementation "androidx.work:work-runtime:$work_version"
+    androidTestImplementation "androidx.work:work-testing:$work_version"
+
 
     implementation 'com.android.volley:volley:1.1.1'
     implementation 'androidx.appcompat:appcompat:1.2.0'

@@ -5,6 +5,11 @@
     <string name="noise_rating">Noise Level</string>
     <string name="light_rating">Light Level</string>
     <string name="write_review">WRITE REVIEW</string>
+    <string name = "button_take_photo">Take Photo</string>
+    <string name = "location_label_text_view">Location</string>
+    <string name = "rating_text_view">Rating</string>
+    <string name = "submit_button">Submit</string>
+    <string name = "comments_text_view">Commentsgit</string>
     <!--Strings for noise measurements -->
     <string name = "measured_average_noise">Noise Level: %.2f dB SPL</string>
     <string name ="take_noise_measurement">Take a noise measurement</string>

@@ -59,7 +59,6 @@ public class StudySpotRepository {
         mDatabase = FirebaseFirestore.getInstance();
         mQueue = Volley.newRequestQueue(context);
     }
-
     /*
      * Asynchronously retrieves all of the study spots in the database, adds them
      * to the provided list, and notifies the list's observers of the change in data.
@@ -256,38 +255,36 @@ public class StudySpotRepository {
         saveNoiseRecord(spot);
 
         if (spot.numberOfReviews() > 0) {
-            ArrayList<Review> reviewsToSave = new ArrayList<Review>();
             for (int i = 0; i < spot.numberOfReviews(); i++) {
-                reviewsToSave.add(spot.getReview(i));
+                saveReview(spot.getReview(i), spot);
             }
-            saveReview(reviewsToSave, spot);
         }
 
     }
 
 
     /*
-     *Saves the review to the firebase database. Reviews is an array of one or more reviews to be added.
+     *Saves the review to the firebase database. Reviews is the review to be added.
      * spot is the StudySpot that the reviews are for.
      */
-    public void saveReview(List<Review> reviews, StudySpot spot) {
-        for (Review rev : reviews) {
-            mDatabase.collection(COLLECTION_STUDYSPOTS).document(spot.getDocumentName())
-                    .collection(COLLECTION_REVIEW).add(rev)
-                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                        @Override
-                        public void onSuccess(DocumentReference documentReference) {
-                            Log.d(TAG, "DocumentSnapshot written with ID: "
-                                    + documentReference.getId());
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.w(TAG, "Error adding document", e);
-                        }
-                    });
-        }
+    public void saveReview(Review review, StudySpot spot) {
+
+        mDatabase.collection(COLLECTION_STUDYSPOTS).document(spot.getDocumentName())
+                .collection(COLLECTION_REVIEW).add(review)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        Log.d(TAG, "DocumentSnapshot written with ID: "
+                                + documentReference.getId());
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error adding document", e);
+                    }
+                });
+
     }
 
     /*

@@ -23,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -159,7 +160,6 @@ public class LocationListFragment extends Fragment implements ListAdapter.ListIt
         Log.d(TAG,"onCreateView() called by" + TAG);
 
         mLightLevel = (TextView) root.findViewById(R.id.details_light_level);
-
         mLightMeasButton = (Button) root.findViewById(R.id.button_take_light_measurement);
         final ContextWrapper contextWrapper = new ContextWrapper(requireContext());
         mLightMeasButton.setOnClickListener( new View.OnClickListener(){
@@ -357,16 +357,11 @@ public class LocationListFragment extends Fragment implements ListAdapter.ListIt
 
     public void onListItemClick(int position) {
 
-//        FragmentManager fm = getChildFragmentManager();
-//        Fragment fragment = fm.findFragmentById(R.id.detail_fragment);
-//        if (fragment == null) {
-//            fragment = new DetailsFragment();
-//            fm.beginTransaction()
-//                    .add(R.id.detail_container, fragment)
-//                    .commit();
-//        }
         selectedSpot = mAdapter.getStudySpot(position);
-
+        //set the current rating
+        RatingBar rating = root.findViewById(R.id.location_rating);
+        rating.setRating((float) selectedSpot.getAvgRating());
+        //display the map view of the specified study spot
         mapView.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(GoogleMap googleMap) {

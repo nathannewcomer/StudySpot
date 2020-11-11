@@ -11,11 +11,11 @@
     <string name = "submit_button">Submit</string>
     <string name = "comments_text_view">Comments</string>
     <!--Strings for noise measurements -->
-    <string name = "measured_average_noise">Noise Level: %.2f dB SPL</string>
+    <string name = "measured_average_noise">%.2f dB SPL</string>
     <string name ="take_noise_measurement">Take a noise measurement</string>
     <!--Strings for light measurements -->
     <string name ="take_light_measurement">Take a light measurement</string>
-    <string name = "measured_average_light">Light Level: %.2f lux</string>
+    <string name = "measured_average_light"> %.2f lux</string>
     <string name = "pre_measured_average_light">Recording light please wait %d seconds</string>
 
 </resources>

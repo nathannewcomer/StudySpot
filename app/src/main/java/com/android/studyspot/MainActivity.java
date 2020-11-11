@@ -1,4 +1,5 @@
 package com.android.studyspot;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
@@ -6,6 +7,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager.widget.ViewPager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 
 import com.android.studyspot.models.StudySpot;
 import com.google.android.material.tabs.TabLayout;
@@ -54,10 +56,13 @@ public class MainActivity
         viewModel.deleteStudySpot(testSpot);
          */
 
+
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        tabLayout = (TabLayout) findViewById(R.id.tabLayout);
+        //ActionBar bar = getSupportActionBar();
+        //bar.setDisplayHomeAsUpEnabled(true);
 
+        tabLayout = (TabLayout) findViewById(R.id.tabLayout);
         viewPager = findViewById(R.id.viewPager);
         TabAssistant tabAssistant = new TabAssistant(getSupportFragmentManager(), 2);
         viewPager.setAdapter(tabAssistant);
@@ -106,6 +111,15 @@ public class MainActivity
         Log.d(TAG, "onDestroy() called by" + TAG);
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        switch (item.getItemId()) {
+            default:
+                // If we got here, the user's action was not recognized.
+                // Invoke the superclass to handle it.
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
 }
 

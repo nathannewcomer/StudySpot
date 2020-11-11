@@ -43,10 +43,9 @@ public class LightMeasurer implements Runnable {
     private HandlerThread mHandlerThread;
     private ContextWrapper mContext;
     private int numMeasurements = 0;
-    private float cmaLight = 0; //the cumulative moving average of the light measurements in lux
+    private double cmaLight = 0; //the cumulative moving average of the light measurements in lux
     private MutableLiveData<Boolean> finished;
     private StudySpot mSpot;
-
 
     LightMeasurer(ContextWrapper context, StudySpot spot){
         finished = new MutableLiveData<>();
@@ -71,12 +70,9 @@ public class LightMeasurer implements Runnable {
         mSpot.addLightRecord(now.toString(),cmaLight);
         mSpot.setAvgLight(mSpot.calculateAvgLight());
         finished.postValue(Boolean.TRUE);
-
-
     }
 
     private void takeLightMeasurements(){
-
         mSensorManager = (SensorManager) mContext.getSystemService(ContextWrapper.SENSOR_SERVICE);
         Sensor lightSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
         mHandlerThread = new HandlerThread(HANDLER_NAME, Process.THREAD_PRIORITY_DEFAULT); //adjust priority if necessary
@@ -86,7 +82,7 @@ public class LightMeasurer implements Runnable {
         mListener = new SensorEventListener(){
             @Override
             public void onSensorChanged(SensorEvent event) {
-                float lightInLux = event.values[0];
+                double lightInLux = event.values[0];
                 /*compute the cumulative moving average,
                  *see https://en.wikipedia.org/wiki/Moving_average
                  */
@@ -98,12 +94,9 @@ public class LightMeasurer implements Runnable {
             public void onAccuracyChanged(Sensor sensor, int accuracy) {
                 //do nothing, this is required for the abstract class
             }
-
         };
-
         mSensorManager.registerListener(mListener, lightSensor, SensorManager.SENSOR_DELAY_FASTEST,
                 handler);
-
     }
 
     /*
@@ -129,7 +122,7 @@ public class LightMeasurer implements Runnable {
      *Returns the average illuminance read by the default light sensor on your device.
      * Will not be accurate until isFinished() has returned true.
      */
-    public float getAverageLight(){
+    public double getAverageLight(){
         return cmaLight;
     }
 }

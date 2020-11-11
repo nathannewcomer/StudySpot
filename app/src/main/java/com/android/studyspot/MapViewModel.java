@@ -11,6 +11,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.android.studyspot.models.StudySpot;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 
 import com.google.android.gms.tasks.Task;
@@ -100,6 +101,21 @@ public class MapViewModel extends AndroidViewModel {
         }
         mRepo.deleteStudySpot(spot);
     }
+
+    public StudySpot findStudySpotByName(String name){
+        List<StudySpot> spots = mStudySpots.getValue();
+        StudySpot mSpot = null;
+        String otherSpotName;
+        int pos = -1;
+        for(int i = 0; i < spots.size();i++){
+            otherSpotName = spots.get(i).getName();
+            if(name.compareTo(otherSpotName) == 0){
+                mSpot = spots.get(i);
+            }
+        }
+        return mSpot;
+    }
+
 
     /*
      *Updates  the average rating, average noise, and or average light field for spot in the database

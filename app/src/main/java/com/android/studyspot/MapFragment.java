@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -69,7 +70,7 @@ public class MapFragment extends Fragment{
     private TextView mLightLevel;
     private TextView mNoiseLevel;
     private StudySpot selectedSpot;
-
+    private MapView mMapContainer;
 
 
 
@@ -114,12 +115,17 @@ public class MapFragment extends Fragment{
             public void onClick(View view) {
                 mDetails.setVisibility(View.GONE);
                 mMapView.setVisibility(View.VISIBLE);
+                settingsButton.setVisibility(View.VISIBLE);
             }
         });
         // initialize map
         mMapView = root.findViewById(R.id.mapView);
         mMapView.onCreate(savedInstanceState);
         mMapView.onResume(); // needed to get the map to display immediately
+        //small map for detail page
+        mMapContainer = root.findViewById(R.id.small_map_container);
+        mMapContainer.onCreate(savedInstanceState);
+        mMapContainer.onResume(); //force maps to start
         mMapView.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(GoogleMap mMap) {
@@ -139,14 +145,30 @@ public class MapFragment extends Fragment{
                     public boolean onMarkerClick(Marker marker) {
                         //logic for displaying detail screen
                         String mSpotTitle = marker.getTitle();
+                        //need to set selectedSpot here so that we know what location we clicked on
+                        selectedSpot = viewModel.findStudySpotByName(mSpotTitle);
+                        RatingBar rating = mDetails.findViewById(R.id.location_rating);
+                        rating.setRating((float) selectedSpot.getAvgRating());
+                        //display the map view of the specified study spot
+                        mMapContainer.getMapAsync(new OnMapReadyCallback() {
+                            @Override
+                            public void onMapReady(GoogleMap googleMap) {
+                                LatLng coords = new LatLng(selectedSpot.getCoords().getLatitude(), selectedSpot.getCoords().getLongitude());
+                                googleMap.addMarker(new MarkerOptions().title(selectedSpot.getName()).position(coords));
+                            }
+                        });
                         mDetails.setVisibility(View.VISIBLE);
                         mMapView.setVisibility(View.GONE);
+                        settingsButton.setVisibility(View.GONE);
+
                         return true;
                     }
                 });
 
             }
         });
+
+
         //TODO repetitive code for both fragments
         mLightLevel = (TextView) root.findViewById(R.id.details_light_level);
         mLightMeasButton = (Button) root.findViewById(R.id.button_take_light_measurement);

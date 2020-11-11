@@ -17,5 +17,6 @@
     <string name ="take_light_measurement">Take a light measurement</string>
     <string name = "measured_average_light"> %.2f lux</string>
     <string name = "pre_measured_average_light">Recording light please wait %d seconds</string>
+    <string name = "leave_review_failed">Review failed to submit.</string>
 
 </resources>

@@ -4,22 +4,25 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class Review implements Parcelable {
+    private String mSpotName;
     private double mRating;
     private int mLikes;
     private String mComment;
-    //TODO replace this once figure out implmentation of cloud storage for photos
+    //TODO replace this once figure out implementation of cloud storage for photos
     private String mPhotoPath;
 
     /*this empty constructor is required for firebase to
      *call the DocumentReference.set() method on this object
      */
     public Review(){
+        mSpotName = "";
         mRating = 0;
         mLikes = 0;
         mComment = "";
         mPhotoPath = "";
     }
-    public Review(double rating, int likes, String comment, String photoPath){
+    public Review(String name, double rating, int likes, String comment, String photoPath){
+        mSpotName = name;
         mRating = rating;
         mLikes = likes;
         mComment = comment;
@@ -27,6 +30,7 @@ public class Review implements Parcelable {
     }
 
     protected Review(Parcel in) {
+        mSpotName = in.readString();
         mRating = in.readDouble();
         mLikes = in.readInt();
         mComment = in.readString();
@@ -53,6 +57,14 @@ public class Review implements Parcelable {
         if(rating > 0.0){
             mRating = rating;
         }
+    }
+
+    public String getSpotName() {
+        return mSpotName;
+    }
+
+    public void setSpotName(String mSpotName) {
+        this.mSpotName = mSpotName;
     }
 
     public int getLikes() {
@@ -86,6 +98,7 @@ public class Review implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(mSpotName);
         dest.writeDouble(mRating);
         dest.writeInt(mLikes);
         dest.writeString(mComment);

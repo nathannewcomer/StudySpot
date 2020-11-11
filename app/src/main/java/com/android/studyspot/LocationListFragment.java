@@ -1,6 +1,7 @@
     package com.android.studyspot;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -27,6 +28,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.studyspot.models.Review;
 import com.android.studyspot.models.StudySpot;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationRequest;
@@ -41,7 +43,11 @@ import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.util.List;
 
-/**
+import javax.xml.transform.Result;
+
+import static android.app.Activity.RESULT_OK;
+
+    /**
  * A simple {@link Fragment} subclass.
  * Use the {@link LocationListFragment#newInstance} factory method to
  * create an instance of this fragment.
@@ -53,6 +59,8 @@ public class LocationListFragment extends Fragment implements ListAdapter.ListIt
     private static final int REQUEST_RECORD_AUDIO_PERM = 200;
     private final static String PERM_REC_AUDIO = Manifest.permission.RECORD_AUDIO;
     private final static String PERM_FINE_LOC = Manifest.permission.ACCESS_FINE_LOCATION;
+    private final int REVIEW_REQUEST_CODE = 1;
+    public static final String REVIEW_NAME = "ReviewName";
 
     private RecyclerView listView;
     private ImageButton settingsButton;
@@ -68,6 +76,7 @@ public class LocationListFragment extends Fragment implements ListAdapter.ListIt
     private Button mNoiseMeasButton;
     private TextView mLightLevel;
     private TextView mNoiseLevel;
+    private Button mReview;
 
     private StudySpot selectedSpot;
     private FusedLocationProviderClient mFusedLocationClient;
@@ -110,7 +119,7 @@ public class LocationListFragment extends Fragment implements ListAdapter.ListIt
         // Inflate the layout for this fragment
         root = inflater.inflate(R.layout.fragment_list, container, false);
         details = root.findViewById(R.id.detail_container);
-        Button mReview = root.findViewById(R.id.button_review);
+        mReview = root.findViewById(R.id.button_review);
         ImageButton back = root.findViewById(R.id.search_back);
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -119,13 +128,13 @@ public class LocationListFragment extends Fragment implements ListAdapter.ListIt
             }
         });
         details.setVisibility(View.GONE);
-        mReview.setOnClickListener(new View.OnClickListener() {
+        /*mReview.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent reviewIntent = new Intent(getActivity().getApplicationContext(), ReviewActivity.class);
                 startActivity(reviewIntent);
             }
-        });
+        });*/
 
         //map initialize
         mapView = root.findViewById(R.id.small_map_container);
@@ -369,6 +378,14 @@ public class LocationListFragment extends Fragment implements ListAdapter.ListIt
                 googleMap.addMarker(new MarkerOptions().title(selectedSpot.getName()).position(coords));
 
               //TODO add observer for individual study spot
+                mReview.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent reviewIntent = new Intent(getActivity().getApplicationContext(), ReviewActivity.class);
+                        reviewIntent.putExtra(REVIEW_NAME, selectedSpot.getName());
+                        startActivityForResult(reviewIntent, REVIEW_REQUEST_CODE);
+                    }
+                });
             }
         });
         details.setVisibility(View.VISIBLE);
@@ -377,6 +394,37 @@ public class LocationListFragment extends Fragment implements ListAdapter.ListIt
 
 
         Log.d(TAG, "onClick() called by" + TAG);
+
+    }
+
+    // receives the review from ReviewActivity and puts it into the database
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // only do this if the request code is the same and result code is ok
+        if (requestCode == REVIEW_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            Review review = data.getParcelableExtra(LeaveReviewFragment.NEW_REVIEW);
+
+            StudySpot spot = null;
+            // put review into local list
+            for (StudySpot studySpot : viewModel.getSpots().getValue()) {
+                if (studySpot.getName().equals(review.getSpotName())) {
+                    spot = studySpot;
+                    spot.addReview(review);
+                    break;
+                }
+            }
+
+            // put review into database
+            if (spot != null) {
+                StudySpotRepository repo = new StudySpotRepository(getContext());
+                repo.saveReview(review, spot);
+            } else {
+                Toast.makeText(getContext(), R.string.leave_review_failed, Toast.LENGTH_LONG).show();
+            }
+
+        }
 
     }
 

@@ -29,6 +29,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
+import com.android.studyspot.models.Review;
 import com.bumptech.glide.Glide;
 
 public class LeaveReviewFragment extends Fragment implements View.OnClickListener {
@@ -38,6 +39,7 @@ public class LeaveReviewFragment extends Fragment implements View.OnClickListene
     private static final String DATE_FORMAT_FILE = "yyyyMMdd-HHmmss";
     private static final String PHOTO_PATH_PREFIX = "StudySpotPhoto_";
     private static final String KEY_IMAGE_PATH = "com.android.studyspot.recentphoto";
+    public static final String NEW_REVIEW = "NewReview";
     private static final String[] STORAGE_PERMISSIONS = new String[]{
         Manifest.permission.READ_EXTERNAL_STORAGE,
         Manifest.permission.WRITE_EXTERNAL_STORAGE
@@ -48,6 +50,7 @@ public class LeaveReviewFragment extends Fragment implements View.OnClickListene
     private Button submitButton;
     private Button photoButton;
     private ImageView locationImageView;
+    private String mSpotName;
 
     private String imagePath;
 
@@ -58,6 +61,9 @@ public class LeaveReviewFragment extends Fragment implements View.OnClickListene
         View v = inflater.inflate(R.layout.fragment_leave_review,container, false);
 
         locationTextView = (TextView) v.findViewById(R.id.location_text_view);
+        mSpotName = getActivity().getIntent().getStringExtra(LocationListFragment.REVIEW_NAME);
+        locationTextView.setText(mSpotName);
+
         locationRatingBar = (RatingBar) v.findViewById(R.id.location_rating_bar);
         commentsEditText = (EditText) v.findViewById(R.id.comments_edit_text);
         submitButton = (Button) v.findViewById(R.id.submit_button);
@@ -119,6 +125,18 @@ public class LeaveReviewFragment extends Fragment implements View.OnClickListene
     public void onClick(View v){
         switch(v.getId()){
             case R.id.submit_button:
+                Review review = new Review();
+                review.setSpotName(mSpotName);
+                review.setRating(locationRatingBar.getRating());
+                review.setComment(commentsEditText.getText().toString());
+                // TODO: figure out likes and images
+
+                // send review back to MainActivity
+                Intent intent = new Intent();
+                intent.putExtra(NEW_REVIEW, review);
+                getActivity().setResult(RESULT_OK, intent);
+                // TODO: maybe call Activity.finish() to take user back to previous activity
+
                 break;
             case R.id.location_image_view:
                 break;

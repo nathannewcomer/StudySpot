@@ -1,6 +1,7 @@
 package com.android.studyspot;
 
 import android.Manifest;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -19,7 +20,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.studyspot.models.Review;
 import com.android.studyspot.models.StudySpot;
@@ -52,12 +56,20 @@ public class MapFragment extends Fragment{
     private static final String TAG = "MapFragment";
     private final static int REQUEST_FINE_LOC_PERM = 4;
     private final static String PERM_FINE_LOC = Manifest.permission.ACCESS_FINE_LOCATION;
-
+    private static final int REQUEST_RECORD_AUDIO_PERM = 200;
+    private final static String PERM_REC_AUDIO = Manifest.permission.RECORD_AUDIO;
     private MapViewModel viewModel;
     private MapView mMapView;
     private GoogleMap googleMap;
     private ImageButton settingsButton;
     private List<Marker> markers;
+    private View mDetails;
+    private Button mLightMeasButton;
+    private Button mNoiseMeasButton;
+    private TextView mLightLevel;
+    private TextView mNoiseLevel;
+    private StudySpot selectedSpot;
+
 
 
 
@@ -85,7 +97,25 @@ public class MapFragment extends Fragment{
                 startActivity(settingsIntent);
             }
         });
-
+        //initialize details page segment
+        mDetails = root.findViewById(R.id.detail_container);
+        Button mReview = root.findViewById(R.id.button_review);
+        mReview.setOnClickListener(new View.OnClickListener() {
+            @Override
+            //start new activity to create a review
+            public void onClick(View view) {
+                Intent reviewIntent = new Intent(getActivity().getApplicationContext(), ReviewActivity.class);
+                startActivity(reviewIntent);
+            }
+        });
+        ImageButton mBack = root.findViewById(R.id.search_back);
+        mBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mDetails.setVisibility(View.GONE);
+                mMapView.setVisibility(View.VISIBLE);
+            }
+        });
         // initialize map
         mMapView = root.findViewById(R.id.mapView);
         mMapView.onCreate(savedInstanceState);
@@ -96,19 +126,90 @@ public class MapFragment extends Fragment{
                 googleMap = mMap;
                 enableMyLocation();
                 setMarkers(viewModel.getSpots().getValue());
-
                 // add observer to studySpots
                 viewModel.getSpots().observe(getViewLifecycleOwner(), new Observer<List<StudySpot>>() {
                     @Override
                     public void onChanged(List<StudySpot> studySpots) {
                         setMarkers(studySpots);
+
                     }
                 });
+                googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                    @Override
+                    public boolean onMarkerClick(Marker marker) {
+                        //logic for displaying detail screen
+                        String mSpotTitle = marker.getTitle();
+                        mDetails.setVisibility(View.VISIBLE);
+                        mMapView.setVisibility(View.GONE);
+                        return true;
+                    }
+                });
+
+            }
+        });
+        //TODO repetitive code for both fragments
+        mLightLevel = (TextView) root.findViewById(R.id.details_light_level);
+        mLightMeasButton = (Button) root.findViewById(R.id.button_take_light_measurement);
+        final ContextWrapper contextWrapper = new ContextWrapper(requireContext());
+        mLightMeasButton.setOnClickListener( new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                String greetingText = String.format(getString(R.string.pre_measured_average_light),
+                        LightMeasurer.MEASURING_TIME_MS/1000);
+                Toast.makeText(requireContext(), greetingText,Toast.LENGTH_LONG).show();
+                final LightMeasurer meas = new LightMeasurer(contextWrapper, selectedSpot);
+                Thread lightMeasThread = new Thread(meas,"LightMeasThread");
+                meas.isFinished().observe(requireActivity(), new Observer<Boolean>() {
+                    @Override
+                    public void onChanged(Boolean finished) {
+                        if(finished){
+                            viewModel.updateDBSpotLight(selectedSpot);
+                            String text = String.format(getString(R.string.measured_average_light),
+                                    meas.getAverageLight());
+                            Toast.makeText(requireContext(), text ,Toast.LENGTH_LONG).show();
+                            String lightLevelText = String.format(getString(R.string.measured_average_light),
+                                    selectedSpot.getAvgLight());
+                            mLightLevel.setText(lightLevelText);
+                            meas.isFinished().removeObservers(requireActivity());
+                        }
+                    }
+                });
+                lightMeasThread.start();
             }
         });
 
-        Log.d(TAG,"onCreateView() called by" + TAG);
+        mNoiseLevel = (TextView) root.findViewById(R.id.details_noise_level);
+        mNoiseMeasButton = (Button) root.findViewById(R.id.button_take_noise_measurement);
+        mNoiseMeasButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                if(ContextCompat.checkSelfPermission(requireContext(),PERM_REC_AUDIO)
+                        == PackageManager.PERMISSION_GRANTED){
+                    final NoiseMeasurer meas = new NoiseMeasurer(selectedSpot);
+                    Thread noiseMeasThread = new Thread(meas,"NoiseMeasThread");
+                    meas.isFinished().observe(requireActivity(), new Observer<Boolean>() {
+                        @Override
+                        public void onChanged(Boolean finished) {
+                            if(finished){
+                                viewModel.updateDBSpotNoise(selectedSpot);
+                                String text = String.format(getString(R.string.measured_average_noise),
+                                        meas.getAverageNoise());
+                                Toast.makeText(requireContext(), text ,Toast.LENGTH_LONG).show();
+                                mNoiseLevel.setText(text);
+                                meas.isFinished().removeObservers(requireActivity());
+                            }
+                        }
+                    });
+                    noiseMeasThread.start();
+                }
+                else{
+                    requestPermissions(new String[]{PERM_REC_AUDIO}, REQUEST_RECORD_AUDIO_PERM);
+                }
+            }
+        });
+        //set markerOnClick properties
 
+        Log.d(TAG,"onCreateView() called by" + TAG);
         return root;
     }
 

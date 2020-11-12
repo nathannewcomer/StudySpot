@@ -144,6 +144,11 @@ public class MapViewModel extends AndroidViewModel {
         mRepo.saveNoiseRecord(spot);
     }
 
+    public void setAverageCurrentRatingFromReview(StudySpot spot){
+        mRepo.retrieveReviews(spot, mStudySpots);
+        Log.d(TAG, "setCurrentRatingFromReview() called by " + TAG);
+    }
+
     public Location getCurrentLocation() {
         return mCurrentLocation;
     }

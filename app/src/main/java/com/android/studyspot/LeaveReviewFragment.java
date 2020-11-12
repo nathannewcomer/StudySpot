@@ -135,7 +135,8 @@ public class LeaveReviewFragment extends Fragment implements View.OnClickListene
                 Intent intent = new Intent();
                 intent.putExtra(NEW_REVIEW, review);
                 getActivity().setResult(RESULT_OK, intent);
-                // TODO: maybe call Activity.finish() to take user back to previous activity
+                //added this to send us back to previous page
+                getActivity().finish();
 
                 break;
             case R.id.location_image_view:

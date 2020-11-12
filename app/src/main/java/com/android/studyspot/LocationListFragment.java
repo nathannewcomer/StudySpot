@@ -423,6 +423,7 @@ public class LocationListFragment extends Fragment implements ListAdapter.ListIt
             } else {
                 Toast.makeText(getContext(), R.string.leave_review_failed, Toast.LENGTH_LONG).show();
             }
+            viewModel.setAverageCurrentRatingFromReview(spot);
 
         }
 

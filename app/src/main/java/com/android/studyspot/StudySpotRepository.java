@@ -59,6 +59,7 @@ public class StudySpotRepository {
         mDatabase = FirebaseFirestore.getInstance();
         mQueue = Volley.newRequestQueue(context);
     }
+
     /*
      * Asynchronously retrieves all of the study spots in the database, adds them
      * to the provided list, and notifies the list's observers of the change in data.
@@ -134,11 +135,19 @@ public class StudySpotRepository {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
+                            double average = 0;
+                            int counter = 0;
                             for (QueryDocumentSnapshot document : task.getResult()) {
+                                counter++;
                                 Review review = document.toObject(Review.class);
+                                double rating = review.getRating();
+                                average = average + rating;
                                 spot.addReview(review);
+                                //need to update study spot rating from review average
                             }
-
+                            //set average rating for spot
+                            double average_rating = average / (double) counter;
+                            spot.setAvgRating(average_rating);
                             spotHolder.setValue(spotHolder.getValue());
                         } else {
                             Log.d(TAG, "Error getting reviews: ", task.getException());

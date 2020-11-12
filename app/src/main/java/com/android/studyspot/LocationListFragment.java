@@ -370,11 +370,13 @@ public class LocationListFragment extends Fragment implements ListAdapter.ListIt
         //set the current rating
         RatingBar rating = root.findViewById(R.id.location_rating);
         rating.setRating((float) selectedSpot.getAvgRating());
-        //display the map view of the specified study spot
+        //clear the google map of any previous markers
+
         mapView.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(GoogleMap googleMap) {
                 LatLng coords = new LatLng(selectedSpot.getCoords().getLatitude(), selectedSpot.getCoords().getLongitude());
+                googleMap.clear();
                 googleMap.addMarker(new MarkerOptions().title(selectedSpot.getName()).position(coords));
 
               //TODO add observer for individual study spot

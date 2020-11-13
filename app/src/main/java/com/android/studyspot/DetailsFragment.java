@@ -1,6 +1,7 @@
 package com.android.studyspot;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -21,6 +22,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.studyspot.models.Review;
 import com.android.studyspot.models.StudySpot;
 
 
@@ -39,6 +41,8 @@ public class DetailsFragment extends Fragment {
     private RatingBar mRatingBar;
     private ImageButton mBackButton;
 
+    private final int REVIEW_REQUEST_CODE = 1;
+    public static final String REVIEW_NAME = "ReviewName";
 
 
     public DetailsFragment(StudySpot spot) {
@@ -120,7 +124,9 @@ public class DetailsFragment extends Fragment {
                                 String text = String.format(getString(R.string.measured_average_noise),
                                         meas.getAverageNoise());
                                 Toast.makeText(requireContext(), text ,Toast.LENGTH_LONG).show();
-                                mNoiseLevel.setText(text);
+                                mNoiseLevel.setText(String.format(
+                                        getString(R.string.measured_average_noise),
+                                        selectedSpot.getAvgNoise()));
                                 meas.isFinished().removeObservers(requireActivity());
                             }
                         }
@@ -147,6 +153,16 @@ public class DetailsFragment extends Fragment {
 
         mLocationName = root.findViewById(R.id.detail_location_name);
         mLocationName.setText(selectedSpot.getName());
+
+        mReview.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent reviewIntent = new Intent(getActivity().getApplicationContext(), ReviewActivity.class);
+                reviewIntent.putExtra(REVIEW_NAME, selectedSpot.getName());
+                startActivityForResult(reviewIntent, REVIEW_REQUEST_CODE);
+            }
+        });
+
         return root;
     }
 
@@ -162,6 +178,46 @@ public class DetailsFragment extends Fragment {
 
     public StudySpot getSelectedSpot(){
         return selectedSpot;
+    }
+
+
+    // receives the review from ReviewActivity and puts it into the database
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // only do this if the request code is the same and result code is ok
+        if (requestCode == REVIEW_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            Review review = data.getParcelableExtra(LeaveReviewFragment.NEW_REVIEW);
+
+            StudySpot spot = null;
+            // put review into local list
+            for (StudySpot studySpot : viewModel.getSpots().getValue()) {
+                if (studySpot.getName().equals(review.getSpotName())) {
+                    spot = studySpot;
+                    spot.addReview(review);
+                    break;
+                }
+            }
+
+            // put review into database
+            if (spot != null) {
+                StudySpotRepository repo = new StudySpotRepository(getContext());
+                repo.saveReview(review, spot);
+
+                //why not just call
+                spot.setAvgRating(spot.calculateAvgRating());
+                mRatingBar.setRating((float) spot.getAvgRating());
+                viewModel.updateDBSpotAverages(spot, StudySpot.KEY_AVG_RATING);
+            } else {
+                Toast.makeText(getContext(), R.string.leave_review_failed, Toast.LENGTH_LONG).show();
+            }
+
+
+            //viewModel.setAverageCurrentRatingFromReview(spot);
+
+        }
+
     }
 
 

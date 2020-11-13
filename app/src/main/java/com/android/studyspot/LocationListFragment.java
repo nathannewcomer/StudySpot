@@ -127,13 +127,6 @@ public class LocationListFragment extends Fragment implements ListAdapter.ListIt
             }
         });
         details.setVisibility(View.GONE);
-        /*mReview.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent reviewIntent = new Intent(getActivity().getApplicationContext(), ReviewActivity.class);
-                startActivity(reviewIntent);
-            }
-        });*/
 
         //map initialize
         mapView = root.findViewById(R.id.small_map_container);
@@ -363,6 +356,11 @@ public class LocationListFragment extends Fragment implements ListAdapter.ListIt
         rating.setRating((float) selectedSpot.getAvgRating());
         //clear the google map of any previous markers
 
+        mLightLevel.setText(String.format(getString(R.string.measured_average_light),
+                selectedSpot.getAvgLight()));
+        mLightLevel.setText(String.format(getString(R.string.measured_average_noise),
+                selectedSpot.getAvgNoise()));
+
         mapView.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(GoogleMap googleMap) {
@@ -413,10 +411,18 @@ public class LocationListFragment extends Fragment implements ListAdapter.ListIt
             if (spot != null) {
                 StudySpotRepository repo = new StudySpotRepository(getContext());
                 repo.saveReview(review, spot);
+
+                //why not just call
+                spot.setAvgRating(spot.calculateAvgRating());
+                RatingBar rating = root.findViewById(R.id.location_rating);
+                rating.setRating((float) selectedSpot.getAvgRating());
+                viewModel.updateDBSpotAverages(spot, StudySpot.KEY_AVG_RATING);
             } else {
                 Toast.makeText(getContext(), R.string.leave_review_failed, Toast.LENGTH_LONG).show();
             }
-            viewModel.setAverageCurrentRatingFromReview(spot);
+
+
+            //viewModel.setAverageCurrentRatingFromReview(spot);
 
         }
 

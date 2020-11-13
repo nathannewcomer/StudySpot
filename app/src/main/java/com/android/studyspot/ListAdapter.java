@@ -33,11 +33,6 @@ public class ListAdapter extends RecyclerView.Adapter <ListAdapter.ViewHolder> {
     private static final String TAG = "ListAdapter";
     final private ListItemClickListener mOnClickListener;
 
-
-    //TODO define this later when figuring out distance stuff
-    //private static final Double DISTANCE_EPSILON
-
-
     /*Constants specifying which StudySpot field to sort the list on and also which, if any,
      * extra information should appear in the location_details TextView.
      */

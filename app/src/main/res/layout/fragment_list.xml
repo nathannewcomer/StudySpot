@@ -34,24 +34,24 @@
             android:src="@drawable/ic_arrow_down"/>
 
 
-    <!--add google maps location to view-->
-    <com.google.android.gms.maps.MapView
-        android:id="@+id/small_map_container"
-        android:layout_width="match_parent"
-        android:layout_height="175dp"
-        android:layout_marginLeft="5dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginRight="5dp"
-        map:cameraZoom = "14"
-        map:cameraTargetLat = "39.9991379"
-        map:cameraTargetLng = "-83.01532619999999"/>
+        <!--add google maps location to view-->
+        <com.google.android.gms.maps.MapView
+            android:id="@+id/small_map_container"
+            android:layout_width="match_parent"
+            android:layout_height="175dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="5dp"
+            map:cameraZoom = "14"
+            map:cameraTargetLat = "39.9991379"
+            map:cameraTargetLng = "-83.01532619999999"/>
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="20dp"
-        android:layout_marginBottom="10dp"
-        android:text="@string/current_rating"
-        android:textSize="15dp"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:layout_marginBottom="10dp"
+            android:text="@string/current_rating"
+            android:textSize="15dp"/>
         <RatingBar
             android:id="@+id/location_rating"
             android:layout_width="236dp"
@@ -61,42 +61,49 @@
             android:isIndicator="true"/>
 
         <TextView
-        android:id = "@+id/details_noise_level"
-        android:layout_width="match_parent"
-        android:layout_height="20dp"
-        android:layout_marginBottom="50dp"
-        android:text="@string/noise_rating"
-        android:textSize="15dp"/>
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:text="@string/noise_rating"
+            android:textSize="15dp"/>
 
-    <!--noise measurment images-->
-
-    <TextView
-        android:id="@+id/details_light_level"
-        android:layout_width="match_parent"
-        android:layout_height="20dp"
-        android:text="@string/light_rating"
-        android:textSize="15dp"/>
-
-    <Button
-        android:id="@+id/button_review"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:text="@string/write_review" />
-    <Button
-        android:id="@+id/button_take_noise_measurement"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:text="@string/take_noise_measurement" />
-    <Button
-        android:id="@+id/button_take_light_measurement"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:text="@string/take_light_measurement" />
+        <TextView
+            android:id = "@+id/details_noise_level"
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:layout_marginBottom="10dp"
+            android:textSize="15dp"/>
 
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:text="@string/light_rating"
+            android:textSize="15dp"/>
+
+        <TextView
+            android:id="@+id/details_light_level"
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:textSize="15dp"/>
+
+        <Button
+            android:id="@+id/button_review"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:text="@string/write_review" />
+        <Button
+            android:id="@+id/button_take_noise_measurement"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:text="@string/take_noise_measurement" />
+        <Button
+            android:id="@+id/button_take_light_measurement"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:text="@string/take_light_measurement" />
 
     </LinearLayout>
 </LinearLayout>

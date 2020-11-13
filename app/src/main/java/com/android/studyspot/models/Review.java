@@ -8,7 +8,6 @@ public class Review implements Parcelable {
     private double mRating;
     private int mLikes;
     private String mComment;
-    //TODO replace this once figure out implementation of cloud storage for photos
     private String mPhotoPath;
 
     /*this empty constructor is required for firebase to

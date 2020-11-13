@@ -64,9 +64,7 @@ public class MapFragment extends Fragment{
     private List<Marker> markers;
     private DetailsFragment detailsFrag;
     private StudySpot selectedSpot;
-
-    //TODO add the back button to the toolbar to get rid of the details fragment
-
+    
     public MapFragment() {
         // Required empty public constructor
     }

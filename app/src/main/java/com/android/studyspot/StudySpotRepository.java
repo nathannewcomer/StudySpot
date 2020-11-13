@@ -34,7 +34,6 @@ import java.util.Map;
 import java.util.Random;
 
 
-//TODO keep this class as a backup in case the service version doesn't work
 /*
  *A class that performs CRUD operations for StudySpots. It retrieves StudySpots from a
  * Cloud Firestore NoSQL database.

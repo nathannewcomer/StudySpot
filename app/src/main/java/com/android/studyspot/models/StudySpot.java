@@ -89,7 +89,6 @@ public class StudySpot {
         mName = name;
     }
 
-    //TODO move this maybe?
     public String getDocumentName() {
         String docName = new String(mName);
         docName = docName.replaceAll("\\s|/", "_");

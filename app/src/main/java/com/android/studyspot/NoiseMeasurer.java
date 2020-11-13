@@ -86,10 +86,6 @@ public class NoiseMeasurer implements Runnable {
         finished.postValue(Boolean.TRUE);
     }
 
-    double getAvgNoise(){
-        return cmaNoise;
-    }
-
     /*
      *Returns a LiveData object representing whether the light measurements have completed.
      */

@@ -63,7 +63,6 @@ public class LocationListFragment extends Fragment implements ListAdapter.ListIt
     public static final String REVIEW_NAME = "ReviewName";
 
     private RecyclerView listView;
-    private ImageButton settingsButton;
     private ListAdapter mAdapter;
     private MapViewModel viewModel;
 
@@ -158,14 +157,6 @@ public class LocationListFragment extends Fragment implements ListAdapter.ListIt
         });
 
         //code for settings button
-        settingsButton = (ImageButton) root.findViewById(R.id.settings_button);
-        settingsButton.setOnClickListener(new View.OnClickListener(){
-           @Override
-           public void onClick(View v){
-                Intent settingsIntent = new Intent(requireActivity().getApplicationContext(), SettingsActivity.class);
-                startActivity(settingsIntent);
-           }
-        });
         Log.d(TAG,"onCreateView() called by" + TAG);
 
         mLightLevel = (TextView) root.findViewById(R.id.details_light_level);

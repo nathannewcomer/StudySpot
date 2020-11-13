@@ -5,8 +5,11 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager.widget.ViewPager;
+
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 
 import com.android.studyspot.models.StudySpot;
@@ -112,8 +115,18 @@ public class MainActivity
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item){
         switch (item.getItemId()) {
+            case R.id.action_settings:
+                Intent settingsIntent = new Intent(getApplicationContext(), SettingsActivity.class);
+                startActivity(settingsIntent);
+                return true;
             default:
                 // If we got here, the user's action was not recognized.
                 // Invoke the superclass to handle it.

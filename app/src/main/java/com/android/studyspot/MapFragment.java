@@ -61,7 +61,6 @@ public class MapFragment extends Fragment{
     private MapViewModel viewModel;
     private MapView mMapView;
     private GoogleMap googleMap;
-    private ImageButton settingsButton;
     private List<Marker> markers;
     private DetailsFragment detailsFrag;
     private StudySpot selectedSpot;
@@ -84,14 +83,7 @@ public class MapFragment extends Fragment{
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View root =  inflater.inflate(R.layout.fragment_map, container, false);
-        settingsButton = (ImageButton) root.findViewById(R.id.settings_button);
-        settingsButton.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                Intent settingsIntent = new Intent(getActivity().getApplicationContext(), SettingsActivity.class);
-                startActivity(settingsIntent);
-            }
-        });
+
         //initialize details page segment
 
 

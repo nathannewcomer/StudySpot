@@ -17,27 +17,4 @@
         map:cameraZoom = "14"
         map:cameraTargetLat = "39.9991379"
         map:cameraTargetLng = "-83.01532619999999"/>
-
-    <ImageButton
-        android:id="@+id/settings_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|right"
-        android:layout_marginRight="5dp"
-        android:layout_marginBottom="5dp"
-        android:adjustViewBounds="true"
-        android:maxWidth="45dp"
-        android:maxHeight="45dp"
-        android:minWidth="45dp"
-        android:minHeight="45dp"
-        android:scaleType="fitCenter"
-        android:src="@drawable/gear">
-    </ImageButton>
-
-    <!--<fragment
-        android:id = "@+id/map_details_container"
-        android:layout_width = "match_parent"
-        android:layout_height = "wrap_content"
-        android:visibility = "gone"/> -->
-
 </LinearLayout>

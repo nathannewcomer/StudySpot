@@ -15,11 +15,16 @@
         android:src="@drawable/ic_arrow_down"/>
 
     <TextView
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:text="@string/location_label_text_view"
+        android:textSize="15dp"/>
+
+    <TextView
         android:id="@+id/detail_location_name"
         android:layout_width="match_parent"
         android:layout_height="20dp"
         android:layout_marginBottom="10dp"
-        android:text="@string/location_label_text_view"
         android:textSize="15dp"/>
 
     <TextView

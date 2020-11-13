@@ -34,11 +34,11 @@ public class DetailsFragment extends Fragment {
     private Button mNoiseMeasButton;
     private TextView mLightLevel;
     private TextView mNoiseLevel;
+    private TextView mLocationName;
     private StudySpot selectedSpot;
     private RatingBar mRatingBar;
     private ImageButton mBackButton;
 
-    //TODO add a way to go back/hide this fragment
 
 
     public DetailsFragment(StudySpot spot) {
@@ -144,6 +144,9 @@ public class DetailsFragment extends Fragment {
                 fm.beginTransaction().hide(DetailsFragment.this).commit();
             }
         });
+
+        mLocationName = root.findViewById(R.id.detail_location_name);
+        mLocationName.setText(selectedSpot.getName());
         return root;
     }
 
@@ -154,7 +157,7 @@ public class DetailsFragment extends Fragment {
                 selectedSpot.getAvgLight()));
         mNoiseLevel.setText(String.format(getString(R.string.measured_average_noise),
                 selectedSpot.getAvgNoise()));
-
+        mLocationName.setText(selectedSpot.getName());
     }
 
     public StudySpot getSelectedSpot(){

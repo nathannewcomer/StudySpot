@@ -1,9 +1,13 @@
 package com.android.studyspot;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.ContextWrapper;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -19,6 +23,9 @@ import androidx.lifecycle.ViewModelProvider;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -35,6 +42,9 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -43,6 +53,7 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.gson.JsonObject;
 
@@ -50,6 +61,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -84,6 +96,13 @@ public class MapFragment extends Fragment{
 
         //initialize details page segment
 
+        /*
+         *Only show the options menu for sorting spots if at or above API Level 24(Version N)
+         * because it is required for List.sort()
+         */
+        if(android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
+            setHasOptionsMenu(true);
+        }
 
         // initialize map
         mMapView = root.findViewById(R.id.mapView);
@@ -163,8 +182,61 @@ public class MapFragment extends Fragment{
         Log.d(TAG, "onDestroy() called by" + TAG);
     }
 
+    @Override
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.map_menu, menu);
+    }
+
+    // TODO: maybe create dialogs somewhere else
+    @Override
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        // showing/hiding of markers is handled in the Dialog classes
+        switch (item.getItemId()) {
+            case R.id.filter_distance:
+                if (ContextCompat.checkSelfPermission(requireContext(),PERM_FINE_LOC)
+                        == PackageManager.PERMISSION_GRANTED) {
+                    FusedLocationProviderClient fusedLocationClient = LocationServices.
+                            getFusedLocationProviderClient(getActivity());
+                    fusedLocationClient.getLastLocation()
+                            .addOnSuccessListener(new OnSuccessListener<Location>() {
+                                @Override
+                                public void onSuccess(Location location) {
+                                    // Got last known location. In some rare situations this can be null.
+                                    if (location != null) {
+                                        FilterDistanceDialog dDialog = new FilterDistanceDialog(viewModel.getSpots().getValue(), markers, location);
+                                        dDialog.show(getParentFragmentManager(), "filterDistance");
+                                    }
+                                }
+                            });
+
+                }
+                return true;
+            case R.id.filter_rating:
+                FilterRatingDialog rDialog = new FilterRatingDialog(viewModel.getSpots().getValue(), markers);
+                rDialog.show(getParentFragmentManager(), "filterRating");
+                return true;
+            case R.id.filter_name:
+                FilterNameDialog nDialog = new FilterNameDialog(viewModel.getSpots().getValue(), markers);
+                nDialog.show(getParentFragmentManager(), "filterName");
+                return true;
+            case R.id.filter_none:
+                for (Marker marker : markers) {
+                    marker.setVisible(true);
+                }
+                return true;
+
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
     // create markers from StudySpot objects and put them into a list
     private void setMarkers(List<StudySpot> spots) {
+        googleMap.clear();
         markers = new ArrayList<>();
 
         for (StudySpot spot : spots) {

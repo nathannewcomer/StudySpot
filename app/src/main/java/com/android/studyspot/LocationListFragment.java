@@ -2,6 +2,7 @@
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -152,63 +153,23 @@ public class LocationListFragment extends Fragment implements ListAdapter.ListIt
         //code for settings button
         Log.d(TAG,"onCreateView() called by" + TAG);
 
-        mLightLevel = (TextView) root.findViewById(R.id.details_light_level);
+        mLightLevel = (TextView) root.findViewById(R.id.list_light_level);
         mLightMeasButton = (Button) root.findViewById(R.id.button_take_light_measurement);
-        final ContextWrapper contextWrapper = new ContextWrapper(requireContext());
         mLightMeasButton.setOnClickListener( new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                String greetingText = String.format(getString(R.string.pre_measured_average_light),
-                        LightMeasurer.MEASURING_TIME_MS/1000);
-                Toast.makeText(requireContext(), greetingText,Toast.LENGTH_LONG).show();
-                final LightMeasurer meas = new LightMeasurer(contextWrapper, selectedSpot);
-                Thread lightMeasThread = new Thread(meas,"LightMeasThread");
-                meas.isFinished().observe(requireActivity(), new Observer<Boolean>() {
-                    @Override
-                    public void onChanged(Boolean finished) {
-                        if(finished){
-                            viewModel.updateDBSpotLight(selectedSpot);
-                            String text = String.format(getString(R.string.measured_average_light),
-                                    meas.getAverageLight());
-                            Toast.makeText(requireContext(), text ,Toast.LENGTH_LONG).show();
-                            String lightLevelText = String.format(getString(R.string.measured_average_light),
-                                    selectedSpot.getAvgLight());
-                            mLightLevel.setText(lightLevelText);
-                            meas.isFinished().removeObservers(requireActivity());
-                        }
-                    }
-                });
-                lightMeasThread.start();
+                takeLightMeasurements(requireContext());
             }
         });
 
-        mNoiseLevel = (TextView) root.findViewById(R.id.details_noise_level);
+
+
+        mNoiseLevel = (TextView) root.findViewById(R.id.list_noise_level);
         mNoiseMeasButton = (Button) root.findViewById(R.id.button_take_noise_measurement);
         mNoiseMeasButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                if(ContextCompat.checkSelfPermission(requireContext(),PERM_REC_AUDIO)
-                        == PackageManager.PERMISSION_GRANTED){
-                        final NoiseMeasurer meas = new NoiseMeasurer(selectedSpot);
-                        Thread noiseMeasThread = new Thread(meas,"NoiseMeasThread");
-                        meas.isFinished().observe(requireActivity(), new Observer<Boolean>() {
-                            @Override
-                            public void onChanged(Boolean finished) {
-                                if(finished){
-                                    viewModel.updateDBSpotNoise(selectedSpot);
-                                    String text = String.format(getString(R.string.measured_average_noise),
-                                            meas.getAverageNoise());
-                                    Toast.makeText(requireContext(), text ,Toast.LENGTH_LONG).show();
-                                    mNoiseLevel.setText(text);
-                                    meas.isFinished().removeObservers(requireActivity());
-                                }
-                            }
-                        });
-                        noiseMeasThread.start();
-                }
-                else{
-                    requestPermissions(new String[]{PERM_REC_AUDIO}, REQUEST_RECORD_AUDIO_PERM);
-                }
+                takeNoiseMeasurements();
             }
         });
 
@@ -323,8 +284,9 @@ public class LocationListFragment extends Fragment implements ListAdapter.ListIt
                 break;
             case REQUEST_RECORD_AUDIO_PERM:
                 if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                    //TODO run the noise measurement thread stuff
+                    takeNoiseMeasurements();
                 }
+                break;
         }
     }
 
@@ -358,7 +320,7 @@ public class LocationListFragment extends Fragment implements ListAdapter.ListIt
 
         mLightLevel.setText(String.format(getString(R.string.measured_average_light),
                 selectedSpot.getAvgLight()));
-        mLightLevel.setText(String.format(getString(R.string.measured_average_noise),
+        mNoiseLevel.setText(String.format(getString(R.string.measured_average_noise),
                 selectedSpot.getAvgNoise()));
 
         mapView.getMapAsync(new OnMapReadyCallback() {
@@ -380,9 +342,6 @@ public class LocationListFragment extends Fragment implements ListAdapter.ListIt
             }
         });
         details.setVisibility(View.VISIBLE);
-
-
-
 
         Log.d(TAG, "onClick() called by" + TAG);
 
@@ -412,7 +371,6 @@ public class LocationListFragment extends Fragment implements ListAdapter.ListIt
                 StudySpotRepository repo = new StudySpotRepository(getContext());
                 repo.saveReview(review, spot);
 
-                //why not just call
                 spot.setAvgRating(spot.calculateAvgRating());
                 RatingBar rating = root.findViewById(R.id.location_rating);
                 rating.setRating((float) selectedSpot.getAvgRating());
@@ -426,6 +384,67 @@ public class LocationListFragment extends Fragment implements ListAdapter.ListIt
 
         }
 
+    }
+
+    public boolean hasMicrophone(){
+        return requireActivity().getPackageManager().hasSystemFeature(PackageManager.FEATURE_MICROPHONE);
+    }
+
+    private void takeNoiseMeasurements(){
+        if(hasMicrophone()){
+            if(ContextCompat.checkSelfPermission(requireContext(),PERM_REC_AUDIO)
+                    == PackageManager.PERMISSION_GRANTED){
+                final NoiseMeasurer meas = new NoiseMeasurer(selectedSpot);
+                Thread noiseMeasThread = new Thread(meas,"NoiseMeasThread");
+                meas.isFinished().observe(requireActivity(), new Observer<Boolean>() {
+                    @Override
+                    public void onChanged(Boolean finished) {
+                        if(finished){
+                            viewModel.updateDBSpotNoise(selectedSpot);
+                            String text = String.format(getString(R.string.measured_average_noise),
+                                    meas.getAverageNoise());
+                            Toast.makeText(requireContext(), text ,Toast.LENGTH_LONG).show();
+                            mNoiseLevel.setText(text);
+                            meas.isFinished().removeObservers(requireActivity());
+                        }
+                    }
+                });
+                noiseMeasThread.start();
+            }
+            else{
+                requestPermissions(new String[]{PERM_REC_AUDIO}, REQUEST_RECORD_AUDIO_PERM);
+            }
+        }
+        else{
+            Toast.makeText(requireContext(),getString(R.string.no_microphone),
+                    Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void takeLightMeasurements(Context context){
+        final ContextWrapper contextWrapper = new ContextWrapper(context);
+
+        String greetingText = String.format(getString(R.string.pre_measured_average_light),
+                LightMeasurer.MEASURING_TIME_MS/1000);
+        Toast.makeText(requireContext(), greetingText,Toast.LENGTH_LONG).show();
+        final LightMeasurer meas = new LightMeasurer(contextWrapper, selectedSpot);
+        Thread lightMeasThread = new Thread(meas,"LightMeasThread");
+        meas.isFinished().observe(requireActivity(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean finished) {
+                if(finished){
+                    viewModel.updateDBSpotLight(selectedSpot);
+                    String text = String.format(getString(R.string.measured_average_light),
+                            meas.getAverageLight());
+                    Toast.makeText(requireContext(), text ,Toast.LENGTH_LONG).show();
+                    String lightLevelText = String.format(getString(R.string.measured_average_light),
+                            selectedSpot.getAvgLight());
+                    mLightLevel.setText(lightLevelText);
+                    meas.isFinished().removeObservers(requireActivity());
+                }
+            }
+        });
+        lightMeasThread.start();
     }
 
 }

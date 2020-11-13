@@ -2,8 +2,8 @@
     <string name="app_name">StudySpot</string>
     <string name="hello_blank_fragment">Hello Blank</string>
     <string name="current_rating">Current Rating</string>
-    <string name="noise_rating">Noise Level</string>
-    <string name="light_rating">Light Level</string>
+    <string name="noise_rating">Average Noise Level</string>
+    <string name="light_rating">Average Light Level</string>
     <string name="write_review">WRITE REVIEW</string>
     <string name = "button_take_photo">Take Photo</string>
     <string name = "location_label_text_view">Location</string>
@@ -14,6 +14,7 @@
     <!--Strings for noise measurements -->
     <string name = "measured_average_noise">%.2f dB SPL</string>
     <string name ="take_noise_measurement">Take a noise measurement</string>
+    <string name = "no_microphone">No microphone detected. Noise measurements disabled</string>
     <!--Strings for light measurements -->
     <string name ="take_light_measurement">Take a light measurement</string>
     <string name = "measured_average_light"> %.2f lux</string>

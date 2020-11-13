@@ -67,7 +67,7 @@
             android:textSize="15dp"/>
 
         <TextView
-            android:id = "@+id/details_noise_level"
+            android:id = "@+id/list_noise_level"
             android:layout_width="match_parent"
             android:layout_height="20dp"
             android:layout_marginBottom="10dp"
@@ -81,7 +81,7 @@
             android:textSize="15dp"/>
 
         <TextView
-            android:id="@+id/details_light_level"
+            android:id="@+id/list_light_level"
             android:layout_width="match_parent"
             android:layout_height="20dp"
             android:textSize="15dp"/>

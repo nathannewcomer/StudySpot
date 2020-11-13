@@ -197,22 +197,20 @@ public class LeaveReviewFragment extends Fragment implements View.OnClickListene
 
     private void sendPhotoIntent(){
         Intent takePhotoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        File photoFile = null;
+        try {
+            photoFile = createImageFile();
+        } catch (IOException ex) {
 
-        if (takePhotoIntent.resolveActivity(requireActivity().getPackageManager()) != null) {
-            File photoFile = null;
-            try {
-                photoFile = createImageFile();
-            } catch (IOException ex) {
-
-            }
-            if (photoFile != null) {
-                Uri photoURI = FileProvider.getUriForFile(requireActivity(),
-                        "com.android.studyspot.fileprovider",
-                        photoFile);
-                takePhotoIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                startActivityForResult(takePhotoIntent, REQUEST_TAKE_PHOTO);
-            }
         }
+        if (photoFile != null) {
+            Uri photoURI = FileProvider.getUriForFile(requireActivity(),
+                    "com.android.studyspot.fileprovider",
+                    photoFile);
+            takePhotoIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+            startActivityForResult(takePhotoIntent, REQUEST_TAKE_PHOTO);
+        }
+
     }
 
     private boolean hasStoragePermissions(){

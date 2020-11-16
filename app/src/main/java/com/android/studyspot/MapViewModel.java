@@ -28,6 +28,7 @@ public class MapViewModel extends AndroidViewModel {
     private MutableLiveData<List<StudySpot>> mStudySpots;
     private StudySpotRepository mRepo;
     private Location mCurrentLocation = null;
+    private MutableLiveData<StudySpot> mDetailsSpot;
 
 
 
@@ -38,6 +39,7 @@ public class MapViewModel extends AndroidViewModel {
         mStudySpots = new MutableLiveData<List<StudySpot>>();
         mStudySpots.setValue(list);
         mRepo = new StudySpotRepository(application.getApplicationContext());
+        mDetailsSpot = new MutableLiveData<>();
     }
 
 
@@ -158,4 +160,11 @@ public class MapViewModel extends AndroidViewModel {
     }
 
 
+    public LiveData<StudySpot> getDetailsSpot() {
+        return mDetailsSpot;
+    }
+
+    public void setDetailsSpot(StudySpot spot) {
+        mDetailsSpot.setValue(spot);
+    }
 }

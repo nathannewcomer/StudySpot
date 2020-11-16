@@ -4,12 +4,14 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -58,7 +60,14 @@ public class LeaveReviewFragment extends Fragment implements View.OnClickListene
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
-        View v = inflater.inflate(R.layout.fragment_leave_review,container, false);
+        View v;
+        int orientation = getActivity().getResources().getConfiguration().orientation;
+        if (orientation == Configuration.ORIENTATION_PORTRAIT){
+            v = inflater.inflate(R.layout.fragment_leave_review,container, false);
+        }
+        else{
+            v = inflater.inflate(R.layout.fragment_leave_review_land,container, false);
+        }
 
         locationTextView = (TextView) v.findViewById(R.id.location_text_view);
         mSpotName = getActivity().getIntent().getStringExtra(LocationListFragment.REVIEW_NAME);

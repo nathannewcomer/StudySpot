@@ -130,16 +130,16 @@ public class MapFragment extends Fragment{
 
                         String mSpotTitle = marker.getTitle();
                         //need to set selectedSpot here so that we know what location we clicked on
-                        selectedSpot = viewModel.findStudySpotByName(mSpotTitle);
+
+                        viewModel.setDetailsSpot(viewModel.findStudySpotByName(mSpotTitle));
                         FragmentManager fm = getChildFragmentManager();
                         if(detailsFrag == null){
-                            detailsFrag = new DetailsFragment(selectedSpot);
+                            detailsFrag = new DetailsFragment();
                             fm.beginTransaction().add(R.id.layout_map, detailsFrag).commit();
-
                         }
                         else{
                             fm.beginTransaction().show(detailsFrag).commit();
-                            detailsFrag.setSelectedSpot(selectedSpot);
+                            //detailsFrag.setSelectedSpot(selectedSpot);
                         }
 
                         return true;

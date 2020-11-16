@@ -51,14 +51,18 @@ public class DetailsFragment extends Fragment {
     public static final String REVIEW_NAME = "ReviewName";
 
 
-    public DetailsFragment(StudySpot spot) {
-        selectedSpot = spot;
-    }
+    public DetailsFragment(){ }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         viewModel = new ViewModelProvider(requireActivity()).get(MapViewModel.class);
+        viewModel.getDetailsSpot().observe(this, new Observer<StudySpot>() {
+            @Override
+            public void onChanged(StudySpot studySpot) {
+                setSelectedSpot(studySpot);
+            }
+        });
     }
 
     @Override
@@ -77,8 +81,10 @@ public class DetailsFragment extends Fragment {
         });
 
         mLightLevel = (TextView) root.findViewById(R.id.details_light_level);
+        /*
         mLightLevel.setText(String.format(getString(R.string.measured_average_light),
                 selectedSpot.getAvgLight()));
+         */
 
         mLightMeasButton = (Button) root.findViewById(R.id.button_take_light_measurement);
         mLightMeasButton.setOnClickListener( new View.OnClickListener(){
@@ -89,8 +95,11 @@ public class DetailsFragment extends Fragment {
         });
 
         mNoiseLevel = (TextView) root.findViewById(R.id.details_noise_level);
-        mNoiseLevel.setText(String.format(getString(R.string.measured_average_noise),
+        /*
+         mNoiseLevel.setText(String.format(getString(R.string.measured_average_noise),
                 selectedSpot.getAvgNoise()));
+
+         */
 
         mNoiseMeasButton = (Button) root.findViewById(R.id.button_take_noise_measurement);
         mNoiseMeasButton.setOnClickListener(new View.OnClickListener(){
@@ -101,7 +110,7 @@ public class DetailsFragment extends Fragment {
         });
 
         mRatingBar = root.findViewById(R.id.location_rating);
-        mRatingBar.setRating((float) selectedSpot.getAvgRating());
+        //mRatingBar.setRating((float) selectedSpot.getAvgRating());
 
         mBackButton = root.findViewById(R.id.search_back);
         mBackButton.setOnClickListener(new View.OnClickListener() {
@@ -113,7 +122,7 @@ public class DetailsFragment extends Fragment {
         });
 
         mLocationName = root.findViewById(R.id.detail_location_name);
-        mLocationName.setText(selectedSpot.getName());
+        //mLocationName.setText(selectedSpot.getName());
 
         mReview.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -175,7 +184,6 @@ public class DetailsFragment extends Fragment {
             } else {
                 Toast.makeText(getContext(), R.string.leave_review_failed, Toast.LENGTH_LONG).show();
             }
-
 
             //viewModel.setAverageCurrentRatingFromReview(spot);
 

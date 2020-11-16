@@ -6,88 +6,97 @@
     android:orientation = "vertical"
     android:id="@+id/detail_fragment">
 
-    <ImageButton
-        android:id="@+id/search_back"
+    <ScrollView
         android:layout_width="match_parent"
-        android:background="@color/cardview_light_background"
-        android:layout_gravity="center"
-        android:layout_height="20dp"
-        android:src="@drawable/ic_arrow_down"/>
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation = "vertical">
+            <ImageButton
+                android:id="@+id/search_back"
+                android:layout_width="match_parent"
+                android:background="@color/cardview_light_background"
+                android:layout_gravity="center"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_arrow_down"/>
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="20dp"
-        android:text="@string/location_label_text_view"
-        android:textSize="15dp"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:text="@string/location_label_text_view"
+                android:textSize="15dp"/>
 
-    <TextView
-        android:id="@+id/detail_location_name"
-        android:layout_width="match_parent"
-        android:layout_height="20dp"
-        android:layout_marginBottom="10dp"
-        android:textSize="15dp"/>
+            <TextView
+                android:id="@+id/detail_location_name"
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:layout_marginBottom="10dp"
+                android:textSize="15dp"/>
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="20dp"
-        android:layout_marginBottom="10dp"
-        android:text="@string/current_rating"
-        android:textSize="15dp"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:layout_marginBottom="10dp"
+                android:text="@string/current_rating"
+                android:textSize="15dp"/>
 
-    <RatingBar
-        android:id="@+id/location_rating"
-        android:layout_width="236dp"
-        android:layout_height="46dp"
-        android:numStars="5"
-        android:stepSize=".5"
-        android:isIndicator="true"/>
+            <RatingBar
+                android:id="@+id/location_rating"
+                android:layout_width="236dp"
+                android:layout_height="46dp"
+                android:numStars="5"
+                android:stepSize=".5"
+                android:isIndicator="true"/>
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="20dp"
-        android:text="@string/noise_rating"
-        android:textSize="15dp"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:text="@string/noise_rating"
+                android:textSize="15dp"/>
 
-    <TextView
-        android:id = "@+id/details_noise_level"
-        android:layout_width="match_parent"
-        android:layout_height="20dp"
-        android:layout_marginBottom="10dp"
-        android:textSize="15dp"/>
+            <TextView
+                android:id = "@+id/details_noise_level"
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:layout_marginBottom="10dp"
+                android:textSize="15dp"/>
 
-    <!--noise measurment images-->
+            <!--noise measurment images-->
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="20dp"
-        android:text="@string/light_rating"
-        android:textSize="15dp"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:text="@string/light_rating"
+                android:textSize="15dp"/>
 
-    <TextView
-        android:id="@+id/details_light_level"
-        android:layout_width="match_parent"
-        android:layout_height="20dp"
-        android:layout_marginBottom="10dp"
-        android:textSize="15dp"/>
+            <TextView
+                android:id="@+id/details_light_level"
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:layout_marginBottom="10dp"
+                android:textSize="15dp"/>
 
-    <Button
-        android:id="@+id/button_review"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:text="@string/write_review" />
-    <Button
-        android:id="@+id/button_take_noise_measurement"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:text="@string/take_noise_measurement" />
-    <Button
-        android:id="@+id/button_take_light_measurement"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:text="@string/take_light_measurement" />
+            <Button
+                android:id="@+id/button_review"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:text="@string/write_review" />
+            <Button
+                android:id="@+id/button_take_noise_measurement"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:text="@string/take_noise_measurement" />
+            <Button
+                android:id="@+id/button_take_light_measurement"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:text="@string/take_light_measurement" />
+        </LinearLayout>
+    </ScrollView>
 
 
 </LinearLayout>

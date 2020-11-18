@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">StudySpot</string>
-    <string name="hello_blank_fragment">Hello Blank</string>
     <string name="current_rating">Current Rating</string>
     <string name="noise_rating">Average Noise Level</string>
     <string name="light_rating">Average Light Level</string>
@@ -11,14 +10,37 @@
     <string name = "submit_button">Submit Review</string>
     <string name = "comments_text_view">Comments</string>
     <string name = "settings">Settings</string>
+    <string name = "map_tab_title">Map</string>
+    <string name = "list_tab_title">Location List</string>
+    <!--strings for settings -->
+    <string name = "switch_pref_fine_location">Allow this app to access your fine location</string>
+    <string name = "switch_pref_background_location">Allow this app to access your location in the background</string>
+    <string name = "switch_pref_camera">Allow this app to access your camera</string>
+    <string name = "switch_pref_storage">Allow this app to access device storage</string>
+    <string name = "switch_pref_microphone">Allow this app to access your microphone</string>
+    <!-- strings for map menu-->
+    <string name = "filter_none">Show all study spots</string>
+    <string name = "filter_name">Filter by name</string>
+    <string name = "filter_rating">Filter by rating</string>
+    <string name = "filter_distance">Filter by distance</string>
+
+    <!--strings for location menu -->
+    <string name = "loc_sort_name">Sort by name</string>
+    <string name = "loc_sort_rating">Sort by rating</string>
+    <string name = "loc_sort_quiet">Sort by quietest spot</string>
+    <string name = "loc_sort_loud">Sort by loudest spot</string>
+    <string name = "loc_sort_bright">Sort by brightest spot</string>
+    <string name = "loc_sort_dark">Sort by darkest spot</string>
+    <string name = "loc_sort_distance">Sort by distance</string>
     <!--Strings for noise measurements -->
-    <string name = "measured_average_noise">%.2f dB SPL</string>
+    <string name = "measured_average_noise" translatable="false">%.2f dB SPL</string>
     <string name ="take_noise_measurement">Take a noise measurement</string>
     <string name = "no_microphone">No microphone detected. Noise measurements disabled</string>
     <!--Strings for light measurements -->
     <string name ="take_light_measurement">Take a light measurement</string>
-    <string name = "measured_average_light"> %.2f lux</string>
+    <string name = "measured_average_light" translatable="false">" %.2f lx"</string>
     <string name = "pre_measured_average_light">Recording light please wait %d seconds</string>
     <string name = "leave_review_failed">Review failed to submit.</string>
+    <string name="hello_blank_fragment">Hello Blank</string>
 
 </resources>

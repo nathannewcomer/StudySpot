@@ -23,9 +23,10 @@ public class TabAssistant extends FragmentStatePagerAdapter {
 
         switch (position) {
             case 0:
-                return "Map";
+
+                return App.getContext().getResources().getString(R.string.map_tab_title);
             case 1:
-               return "Location List";
+               return App.getContext().getResources().getString(R.string.list_tab_title);
         }
         return null;
     }

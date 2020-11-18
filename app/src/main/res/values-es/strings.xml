@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Lugar de Estudio</string>
+    <string name="current_rating">Clasificación Actual</string>
+    <string name="noise_rating">Ruido Medio</string>
+    <string name="light_rating">Luz Media</string>
+    <string name="write_review">Escribir un Comentario</string>
+    <string name="button_take_photo">Tomar Foto</string>
+    <string name="location_label_text_view">Ubicación</string>
+    <string name="hello_blank_fragment">Hola</string>
+    <string name="rating_text_view">Clasificación</string>
+    <string name="settings">Ajustes</string>
+    <string name="comments_text_view">Comentario</string>
+    <string name="submit_button">Enviar Comentario</string>
+    <string name="no_microphone">No se detectó micrófono. Las mediciones de ruido se han desactivado.</string>
+    <string name="take_noise_measurement">Tomar una medida de ruido</string>
+    <string name="take_light_measurement">Tomar una medida de luz</string>
+    <string name="pre_measured_average_light">Midiendo la luz. Por favor espere %d segundos.</string>
+    <string name="leave_review_failed">El comentario no se pudo enviar.</string>
+    <string name="map_tab_title">Mapa</string>
+    <string name="list_tab_title">Lista de ubicaciones</string>
+    <string name="switch_pref_camera">Permitir que esta aplicación acceda a su cámara</string>
+    <string name="switch_pref_storage">Permitir que esta aplicación acceda al almacenamiento de su dispositivo</string>
+    <string name="switch_pref_microphone">Permitir que esta aplicación acceda a su micrófono</string>
+    <string name="switch_pref_fine_location">Permitir que esta aplicación acceda a su ubicación precisa</string>
+    <string name="switch_pref_background_location">Permitir que esta aplicación acceda a su localización en segundo plano</string>
+    <string name="filter_name">Filtrar por nombre</string>
+    <string name="filter_rating">Filtrar por calificación</string>
+    <string name="filter_distance">Filtrar por distancia</string>
+    <string name="loc_sort_name">Ordenar por nombre</string>
+    <string name="loc_sort_rating">Ordenar por calificación</string>
+    <string name="filter_none">Mostrar todos los lugares de estudio</string>
+    <string name="loc_sort_quiet">Ordenar por lugar más tranquilo</string>
+    <string name="loc_sort_loud">Ordenar por lugar más ruidoso</string>
+    <string name="loc_sort_bright">Ordenar por punto más brillante</string>
+    <string name="loc_sort_dark">Ordenar por el punto más oscuro</string>
+    <string name="loc_sort_distance">Ordenar por distancia</string>
+</resources>

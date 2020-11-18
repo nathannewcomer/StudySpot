@@ -2,25 +2,25 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
         <item android:id = "@+id/loc_sort_name"
-            android:title = "Sort by name"
+            android:title = "@string/loc_sort_name"
             app:showAsAction = "never"/>
         <item android:id = "@+id/loc_sort_rating"
-            android:title = "Sort by rating"
+            android:title = "@string/loc_sort_rating"
             app:showAsAction = "never"/>
         <item android:id = "@+id/loc_sort_quiet"
-            android:title = "Sort by quietest spot"
+            android:title = "@string/loc_sort_quiet"
             app:showAsAction = "never"/>
         <item android:id = "@+id/loc_sort_loud"
-            android:title = "Sort by loudest spot"
+            android:title = "@string/loc_sort_loud"
             app:showAsAction = "never"/>
         <item android:id = "@+id/loc_sort_bright"
-            android:title = "Sort by brightest spot"
+            android:title = "@string/loc_sort_bright"
             app:showAsAction = "never"/>
         <item android:id = "@+id/loc_sort_dark"
-            android:title = "Sort by darkest spot"
+            android:title = "@string/loc_sort_dark"
             app:showAsAction = "never"/>
         <item android:id ="@+id/loc_sort_distance"
-                android:title = "Sort by distance"
+                android:title = "@string/loc_sort_distance"
                 app:showAsAction="never"/>
 
 </menu>

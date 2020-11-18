@@ -3,16 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item android:id = "@+id/filter_none"
-        android:title = "Show all study spots"
+        android:title = "@string/filter_none"
         app:showAsAction = "never"/>
     <item android:id = "@+id/filter_name"
-        android:title = "Filter by name"
+        android:title = "@string/filter_name"
         app:showAsAction = "never"/>
     <item android:id = "@+id/filter_rating"
-        android:title = "Filter by rating"
+        android:title = "@string/filter_rating"
         app:showAsAction = "never"/>
     <item android:id = "@+id/filter_distance"
-        android:title = "Filter by distance"
+        android:title = "@string/filter_distance"
         app:showAsAction = "never"/>
 
 

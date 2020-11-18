@@ -33,7 +33,9 @@ public class MainActivity
         setContentView(R.layout.activity_main);
 
         viewModel = new ViewModelProvider(this).get(MapViewModel.class);
-        viewModel.retrieveSpotsFromRepository();
+        if(viewModel.getSpots().getValue().size() == 0){
+            viewModel.retrieveSpotsFromRepository();
+        }
 
 
         //Use this to show creation in demo to grader

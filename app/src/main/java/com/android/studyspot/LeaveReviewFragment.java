@@ -69,6 +69,8 @@ public class LeaveReviewFragment extends Fragment implements View.OnClickListene
             v = inflater.inflate(R.layout.fragment_leave_review_land,container, false);
         }
 
+
+
         locationTextView = (TextView) v.findViewById(R.id.location_text_view);
         mSpotName = getActivity().getIntent().getStringExtra(LocationListFragment.REVIEW_NAME);
         locationTextView.setText(mSpotName);

@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
@@ -117,7 +118,13 @@ public class LocationListFragment extends Fragment implements ListAdapter.ListIt
         }
 
         // Inflate the layout for this fragment
-        root = inflater.inflate(R.layout.fragment_list, container, false);
+        int orientation = getActivity().getResources().getConfiguration().orientation;
+        if (orientation == Configuration.ORIENTATION_PORTRAIT){
+            root = inflater.inflate(R.layout.fragment_list, container, false);
+        }
+        else{
+            root = inflater.inflate(R.layout.fragment_list_land,container, false);
+        }
         details = root.findViewById(R.id.detail_container);
         mReview = root.findViewById(R.id.button_review);
         ImageButton back = root.findViewById(R.id.search_back);
@@ -314,6 +321,8 @@ public class LocationListFragment extends Fragment implements ListAdapter.ListIt
 
         selectedSpot = mAdapter.getStudySpot(position);
         //set the current rating
+        TextView name = root.findViewById(R.id.list_location_name);
+        name.setText(selectedSpot.getName());
         RatingBar rating = root.findViewById(R.id.location_rating);
         rating.setRating((float) selectedSpot.getAvgRating());
         //clear the google map of any previous markers

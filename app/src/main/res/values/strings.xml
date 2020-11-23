@@ -21,8 +21,13 @@
     <!-- strings for map menu-->
     <string name = "filter_none">Show all study spots</string>
     <string name = "filter_name">Filter by name</string>
+    <string name = "filter_name_message">Only show spots with this name:</string>
     <string name = "filter_rating">Filter by rating</string>
+    <string name = "filter_rating_message">Only show spots with ratings at and above:</string>
     <string name = "filter_distance">Filter by distance</string>
+    <string name = "filter_distance_message">Only show spots within this distance in meters and closer:</string>
+    <string name = "filter_button_positive">Okay</string>
+    <string name = "filter_button_negative">Cancel</string>
 
     <!--strings for location menu -->
     <string name = "loc_sort_name">Sort by name</string>
@@ -36,6 +41,7 @@
     <string name = "measured_average_noise" translatable="false">%.2f dB SPL</string>
     <string name ="take_noise_measurement">Take a noise measurement</string>
     <string name = "no_microphone">No microphone detected. Noise measurements disabled</string>
+    <string name = "noise_meas_error">Error measuring noise</string>
     <!--Strings for light measurements -->
     <string name ="take_light_measurement">Take a light measurement</string>
     <string name = "measured_average_light" translatable="false">" %.2f lx"</string>

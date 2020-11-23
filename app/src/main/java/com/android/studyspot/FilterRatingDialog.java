@@ -55,9 +55,8 @@ public class FilterRatingDialog extends DialogFragment {
         mMax = root.findViewById(R.id.dialog_filter_max);
         mCurrentValue = root.findViewById(R.id.dialog_filter_currentValue);
 
-        // TODO: replace hard-coded values with resource strings
-        mTitle.setText("Filter by rating");
-        mMessage.setText("Only show spots with ratings at and above:");
+        mTitle.setText(getString(R.string.filter_rating));
+        mMessage.setText(getString(R.string.filter_rating_message));
         mSeekBar.setProgress(PROGRESS);
         mSeekBar.setMax(MAX);
         mMin.setText(Integer.toString(MIN));
@@ -77,7 +76,7 @@ public class FilterRatingDialog extends DialogFragment {
 
         // pass null as the parent view because it's going in the dialog
         builder.setView(root)
-                .setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+                .setPositiveButton(getString(R.string.filter_button_positive), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 rating = mSeekBar.getProgress();
@@ -100,7 +99,7 @@ public class FilterRatingDialog extends DialogFragment {
             }
         })
                 // we don't need an on-click listener for cancel
-                .setNegativeButton("Cancel", null);
+                .setNegativeButton(getString(R.string.filter_button_negative), null);
 
         // Create the AlertDialog object and return it
         return builder.create();

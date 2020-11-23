@@ -46,12 +46,12 @@ public class FilterNameDialog extends DialogFragment {
         mName = root.findViewById(R.id.dialog_filter_name);
 
         // TODO: replace hard-coded values with resource strings
-        mTitle.setText("Filter by name");
-        mMessage.setText("Only show spots with this name:");
+        mTitle.setText(getString(R.string.filter_name));
+        mMessage.setText(getString(R.string.filter_name_message));
 
         // pass null as the parent view because it's going in the dialog
         builder.setView(root)
-                .setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+                .setPositiveButton(getString(R.string.filter_button_positive), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         String name = mName.getText().toString();
@@ -65,7 +65,7 @@ public class FilterNameDialog extends DialogFragment {
                     }
                 })
                 // we don't need an on-click listener for cancel
-                .setNegativeButton("Cancel", null);
+                .setNegativeButton(getString(R.string.filter_button_negative), null);
 
         // Create the AlertDialog object and return it
         return builder.create();

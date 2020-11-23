@@ -34,6 +34,7 @@ public class NoiseMeasurer implements Runnable {
     private AudioDispatcher mDispatcher;
     private MutableLiveData<Boolean> finished;
     private StudySpot mSpot;
+    private boolean error = false; //flag for whether an error occurred during measurements
 
 
     public NoiseMeasurer(StudySpot spot){
@@ -80,9 +81,14 @@ public class NoiseMeasurer implements Runnable {
             Log.e(TAG,"NoiseMeasurer was interrupted");
         }
         mDispatcher.stop();
-        Date timeFinished = new Date();
-        mSpot.addNoiseRecord(timeFinished.toString(),cmaNoise);
-        mSpot.setAvgNoise(mSpot.calculateAvgNoise());
+        if(cmaNoise == Double.NEGATIVE_INFINITY){
+            error = true;
+        }
+        else{
+            Date timeFinished = new Date();
+            mSpot.addNoiseRecord(timeFinished.toString(),cmaNoise);
+            mSpot.setAvgNoise(mSpot.calculateAvgNoise());
+        }
         finished.postValue(Boolean.TRUE);
     }
 
@@ -99,5 +105,9 @@ public class NoiseMeasurer implements Runnable {
      */
     public double getAverageNoise(){
         return cmaNoise;
+    }
+
+    boolean hadErrors(){
+        return error;
     }
 }

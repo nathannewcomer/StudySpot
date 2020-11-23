@@ -38,6 +38,7 @@ public class LightMeasurer implements Runnable {
     private static final String HANDLER_NAME = "LightMeasHandler";
     //the measuring time in milliseconds
     public static final int MEASURING_TIME_MS = 30000;
+
     private SensorManager mSensorManager;
     private SensorEventListener mListener;
     private HandlerThread mHandlerThread;

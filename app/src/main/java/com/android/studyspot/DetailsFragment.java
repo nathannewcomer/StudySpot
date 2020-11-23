@@ -32,6 +32,7 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.tasks.OnSuccessListener;
 
 
+
 public class DetailsFragment extends Fragment {
 
     private static final String TAG = "DetailsFragment";
@@ -57,12 +58,7 @@ public class DetailsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         viewModel = new ViewModelProvider(requireActivity()).get(MapViewModel.class);
-        viewModel.getDetailsSpot().observe(this, new Observer<StudySpot>() {
-            @Override
-            public void onChanged(StudySpot studySpot) {
-                setSelectedSpot(studySpot);
-            }
-        });
+
     }
 
     @Override
@@ -130,6 +126,13 @@ public class DetailsFragment extends Fragment {
                 Intent reviewIntent = new Intent(getActivity().getApplicationContext(), ReviewActivity.class);
                 reviewIntent.putExtra(REVIEW_NAME, selectedSpot.getName());
                 startActivityForResult(reviewIntent, REVIEW_REQUEST_CODE);
+            }
+        });
+
+        viewModel.getDetailsSpot().observe(getViewLifecycleOwner() , new Observer<StudySpot>() {
+            @Override
+            public void onChanged(StudySpot studySpot) {
+                setSelectedSpot(studySpot);
             }
         });
 
@@ -216,13 +219,20 @@ public class DetailsFragment extends Fragment {
                     @Override
                     public void onChanged(Boolean finished) {
                         if(finished){
-                            viewModel.updateDBSpotNoise(selectedSpot);
-                            String text = String.format(getString(R.string.measured_average_noise),
-                                    meas.getAverageNoise());
-                            Toast.makeText(requireContext(), text ,Toast.LENGTH_LONG).show();
-                            mNoiseLevel.setText(String.format(
-                                    getString(R.string.measured_average_noise),
-                                    selectedSpot.getAvgNoise()));
+                            if(meas.hadErrors()){
+                                Toast.makeText(requireContext(),
+                                        getString(R.string.noise_meas_error),
+                                        Toast.LENGTH_LONG).show();
+                            }
+                            else{
+                                viewModel.updateDBSpotNoise(selectedSpot);
+                                String text = String.format(getString(R.string.measured_average_noise),
+                                        meas.getAverageNoise());
+                                Toast.makeText(requireContext(), text ,Toast.LENGTH_LONG).show();
+                                mNoiseLevel.setText(String.format(
+                                        getString(R.string.measured_average_noise),
+                                        selectedSpot.getAvgNoise()));
+                            }
                             meas.isFinished().removeObservers(requireActivity());
                         }
                     }

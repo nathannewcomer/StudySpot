@@ -35,4 +35,10 @@
     <string name="loc_sort_bright">Ordenar por punto más brillante</string>
     <string name="loc_sort_dark">Ordenar por el punto más oscuro</string>
     <string name="loc_sort_distance">Ordenar por distancia</string>
+    <string name="noise_meas_error">Error al medir el ruido</string>
+    <string name="filter_distance_message">Mostrar solo lugares dentro de esta distancia y más cerca:</string>
+    <string name="filter_button_positive">Bueno</string>
+    <string name="filter_button_negative">Cancelar</string>
+    <string name="filter_name_message">Mostrar solo los lugares con este nombre:</string>
+    <string name="filter_rating_message">Mostrar solo lugares con calificaciones iguales o superiores:</string>
 </resources>

@@ -404,16 +404,23 @@ public class LocationListFragment extends Fragment implements ListAdapter.ListIt
             if(ContextCompat.checkSelfPermission(requireContext(),PERM_REC_AUDIO)
                     == PackageManager.PERMISSION_GRANTED){
                 final NoiseMeasurer meas = new NoiseMeasurer(selectedSpot);
-                Thread noiseMeasThread = new Thread(meas,"NoiseMeasThread");
+                final Thread noiseMeasThread = new Thread(meas,"NoiseMeasThread");
                 meas.isFinished().observe(requireActivity(), new Observer<Boolean>() {
                     @Override
                     public void onChanged(Boolean finished) {
                         if(finished){
-                            viewModel.updateDBSpotNoise(selectedSpot);
-                            String text = String.format(getString(R.string.measured_average_noise),
-                                    meas.getAverageNoise());
-                            Toast.makeText(requireContext(), text ,Toast.LENGTH_LONG).show();
-                            mNoiseLevel.setText(text);
+                            if(meas.hadErrors()){
+                                Toast.makeText(requireContext(),
+                                        getString(R.string.noise_meas_error),
+                                        Toast.LENGTH_LONG).show();
+                            }
+                            else{
+                                viewModel.updateDBSpotNoise(selectedSpot);
+                                String text = String.format(getString(R.string.measured_average_noise),
+                                        meas.getAverageNoise());
+                                Toast.makeText(requireContext(), text ,Toast.LENGTH_LONG).show();
+                                mNoiseLevel.setText(text);
+                            }
                             meas.isFinished().removeObservers(requireActivity());
                         }
                     }

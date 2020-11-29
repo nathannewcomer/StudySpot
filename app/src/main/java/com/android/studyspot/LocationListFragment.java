@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import androidx.annotation.RequiresApi;
@@ -107,80 +109,80 @@ public class LocationListFragment extends Fragment implements ListAdapter.ListIt
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        viewModel = new ViewModelProvider(requireActivity()).get(MapViewModel.class);
+        if(connectionStatus()) {
+            viewModel = new ViewModelProvider(requireActivity()).get(MapViewModel.class);
 
-        /*
-         *Only show the options menu for sorting spots if at or above API Level 24(Version N)
-         * because it is required for List.sort()
-         */
-        if(android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
-            setHasOptionsMenu(true);
+            /*
+             *Only show the options menu for sorting spots if at or above API Level 24(Version N)
+             * because it is required for List.sort()
+             */
+            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                setHasOptionsMenu(true);
+            }
+
+            // Inflate the layout for this fragment
+            int orientation = getActivity().getResources().getConfiguration().orientation;
+            if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+                root = inflater.inflate(R.layout.fragment_list, container, false);
+            } else {
+                root = inflater.inflate(R.layout.fragment_list_land, container, false);
+            }
+            details = root.findViewById(R.id.detail_container);
+            mReview = root.findViewById(R.id.button_review);
+            ImageButton back = root.findViewById(R.id.search_back);
+            back.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    details.setVisibility(View.GONE);
+                }
+            });
+            details.setVisibility(View.GONE);
+
+            //map initialize
+            mapView = root.findViewById(R.id.small_map_container);
+            mapView.onCreate(savedInstanceState);
+            mapView.onResume(); //force maps to start
+
+
+            //code for list init
+            RecyclerView rvList = (RecyclerView) root.findViewById(R.id.recycler_view);
+            mAdapter = new ListAdapter(viewModel.getSpots().getValue(), this);
+            rvList.setAdapter(mAdapter);
+            rvList.setLayoutManager(new LinearLayoutManager(getContext()));
+
+            viewModel.getSpots().observe(getViewLifecycleOwner(), new Observer<List<StudySpot>>() {
+                @Override
+                public void onChanged(List<StudySpot> studySpots) {
+                    mAdapter.setSpots(studySpots);
+                    mAdapter.notifyDataSetChanged();
+                }
+            });
+
+            //code for settings button
+            Log.d(TAG, "onCreateView() called by" + TAG);
+
+            mLightLevel = (TextView) root.findViewById(R.id.list_light_level);
+            mLightMeasButton = (Button) root.findViewById(R.id.button_take_light_measurement);
+            mLightMeasButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    takeLightMeasurements(requireContext());
+                }
+            });
+
+
+            mNoiseLevel = (TextView) root.findViewById(R.id.list_noise_level);
+            mNoiseMeasButton = (Button) root.findViewById(R.id.button_take_noise_measurement);
+            mNoiseMeasButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    takeNoiseMeasurements();
+                }
+            });
+
+        }else{
+            root = inflater.inflate(R.layout.connection_error, container, false);
         }
-
-        // Inflate the layout for this fragment
-        int orientation = getActivity().getResources().getConfiguration().orientation;
-        if (orientation == Configuration.ORIENTATION_PORTRAIT){
-            root = inflater.inflate(R.layout.fragment_list, container, false);
-        }
-        else{
-            root = inflater.inflate(R.layout.fragment_list_land,container, false);
-        }
-        details = root.findViewById(R.id.detail_container);
-        mReview = root.findViewById(R.id.button_review);
-        ImageButton back = root.findViewById(R.id.search_back);
-        back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                details.setVisibility(View.GONE);
-            }
-        });
-        details.setVisibility(View.GONE);
-
-        //map initialize
-        mapView = root.findViewById(R.id.small_map_container);
-        mapView.onCreate(savedInstanceState);
-        mapView.onResume(); //force maps to start
-
-
-
-        //code for list init
-        RecyclerView rvList = (RecyclerView) root.findViewById(R.id.recycler_view);
-        mAdapter = new ListAdapter(viewModel.getSpots().getValue(), this);
-        rvList.setAdapter(mAdapter);
-        rvList.setLayoutManager(new LinearLayoutManager(getContext()));
-
-        viewModel.getSpots().observe(getViewLifecycleOwner(), new Observer<List<StudySpot>>() {
-            @Override
-            public void onChanged(List<StudySpot> studySpots) {
-                mAdapter.setSpots(studySpots);
-                mAdapter.notifyDataSetChanged();
-            }
-        });
-
-        //code for settings button
-        Log.d(TAG,"onCreateView() called by" + TAG);
-
-        mLightLevel = (TextView) root.findViewById(R.id.list_light_level);
-        mLightMeasButton = (Button) root.findViewById(R.id.button_take_light_measurement);
-        mLightMeasButton.setOnClickListener( new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                takeLightMeasurements(requireContext());
-            }
-        });
-
-
-
-        mNoiseLevel = (TextView) root.findViewById(R.id.list_noise_level);
-        mNoiseMeasButton = (Button) root.findViewById(R.id.button_take_noise_measurement);
-        mNoiseMeasButton.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                takeNoiseMeasurements();
-            }
-        });
-
-
         return root;
     }
 
@@ -318,40 +320,42 @@ public class LocationListFragment extends Fragment implements ListAdapter.ListIt
     }
 
     public void onListItemClick(int position) {
+        if(viewModel.isConnected) {
+            selectedSpot = mAdapter.getStudySpot(position);
+            //set the current rating
+            TextView name = root.findViewById(R.id.list_location_name);
+            name.setText(selectedSpot.getName());
+            RatingBar rating = root.findViewById(R.id.location_rating);
+            rating.setRating((float) selectedSpot.getAvgRating());
+            //clear the google map of any previous markers
 
-        selectedSpot = mAdapter.getStudySpot(position);
-        //set the current rating
-        TextView name = root.findViewById(R.id.list_location_name);
-        name.setText(selectedSpot.getName());
-        RatingBar rating = root.findViewById(R.id.location_rating);
-        rating.setRating((float) selectedSpot.getAvgRating());
-        //clear the google map of any previous markers
+            mLightLevel.setText(String.format(getString(R.string.measured_average_light),
+                    selectedSpot.getAvgLight()));
+            mNoiseLevel.setText(String.format(getString(R.string.measured_average_noise),
+                    selectedSpot.getAvgNoise()));
 
-        mLightLevel.setText(String.format(getString(R.string.measured_average_light),
-                selectedSpot.getAvgLight()));
-        mNoiseLevel.setText(String.format(getString(R.string.measured_average_noise),
-                selectedSpot.getAvgNoise()));
+            mapView.getMapAsync(new OnMapReadyCallback() {
+                @Override
+                public void onMapReady(GoogleMap googleMap) {
+                    LatLng coords = new LatLng(selectedSpot.getCoords().getLatitude(), selectedSpot.getCoords().getLongitude());
+                    googleMap.clear();
+                    googleMap.addMarker(new MarkerOptions().title(selectedSpot.getName()).position(coords));
 
-        mapView.getMapAsync(new OnMapReadyCallback() {
-            @Override
-            public void onMapReady(GoogleMap googleMap) {
-                LatLng coords = new LatLng(selectedSpot.getCoords().getLatitude(), selectedSpot.getCoords().getLongitude());
-                googleMap.clear();
-                googleMap.addMarker(new MarkerOptions().title(selectedSpot.getName()).position(coords));
-
-              //TODO add observer for individual study spot
-                mReview.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent reviewIntent = new Intent(getActivity().getApplicationContext(), ReviewActivity.class);
-                        reviewIntent.putExtra(REVIEW_NAME, selectedSpot.getName());
-                        startActivityForResult(reviewIntent, REVIEW_REQUEST_CODE);
-                    }
-                });
-            }
-        });
-        details.setVisibility(View.VISIBLE);
-
+                    //TODO add observer for individual study spot
+                    mReview.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent reviewIntent = new Intent(getActivity().getApplicationContext(), ReviewActivity.class);
+                            reviewIntent.putExtra(REVIEW_NAME, selectedSpot.getName());
+                            startActivityForResult(reviewIntent, REVIEW_REQUEST_CODE);
+                        }
+                    });
+                }
+            });
+            details.setVisibility(View.VISIBLE);
+        }else {
+            Toast.makeText(getContext(), "Failed to Load Study Spot Details. Please Try Again.", Toast.LENGTH_SHORT).show();
+        }
         Log.d(TAG, "onClick() called by" + TAG);
 
     }
@@ -461,6 +465,13 @@ public class LocationListFragment extends Fragment implements ListAdapter.ListIt
             }
         });
         lightMeasThread.start();
+    }
+
+    public boolean connectionStatus(){
+        ConnectivityManager cm = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+        if(networkInfo != null){ return true; }
+        else{return false;}
     }
 
 }

@@ -48,5 +48,6 @@
     <string name = "pre_measured_average_light">Recording light please wait %d seconds</string>
     <string name = "leave_review_failed">Review failed to submit.</string>
     <string name="hello_blank_fragment">Hello Blank</string>
-
+    <string name="failed_connection">Failed to load. Please Check your Internet Connection and Try Again.</string>
+    <string name="database_connection_failed">Connection to database failed. Please try again.</string>
 </resources>

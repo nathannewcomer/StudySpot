@@ -41,4 +41,6 @@
     <string name="filter_button_negative">Cancelar</string>
     <string name="filter_name_message">Mostrar solo los lugares con este nombre:</string>
     <string name="filter_rating_message">Mostrar solo lugares con calificaciones iguales o superiores:</string>
+    <string name="failed_connection">Falló al cargar. Compruebe su conexión a Internet y vuelva a intentarlo</string>
+    <string name="database_connection_failed">Falló la conexión a la base de datos. Inténtalo de nuevo</string>
 </resources>

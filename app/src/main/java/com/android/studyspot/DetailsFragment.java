@@ -179,7 +179,9 @@ public class DetailsFragment extends Fragment {
             if (spot != null) {
                 StudySpotRepository repo = new StudySpotRepository(getContext());
                 repo.saveReview(review, spot);
-
+                if(!repo.getConnectionStatus()){
+                    Toast.makeText(getContext(), R.string.database_connection_failed, Toast.LENGTH_LONG).show();
+                }
                 //why not just call
                 spot.setAvgRating(spot.calculateAvgRating());
                 mRatingBar.setRating((float) spot.getAvgRating());

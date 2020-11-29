@@ -29,6 +29,7 @@ public class MapViewModel extends AndroidViewModel {
     private StudySpotRepository mRepo;
     private Location mCurrentLocation = null;
     private MutableLiveData<StudySpot> mDetailsSpot;
+    public static boolean isConnected;
 
 
 
@@ -49,7 +50,7 @@ public class MapViewModel extends AndroidViewModel {
      */
     void retrieveSpotsFromRepository(){
         mRepo.retrieveAllStudySpots(mStudySpots);
-
+        isConnected = mRepo.getConnectionStatus();
     }
 
     /*
@@ -57,6 +58,7 @@ public class MapViewModel extends AndroidViewModel {
      */
     public void saveStudySpot(StudySpot spot){
         mRepo.saveStudySpot(spot);
+        isConnected = mRepo.getConnectionStatus();
     }
 
     public MutableLiveData<List<StudySpot>> getSpots() {
@@ -81,6 +83,7 @@ public class MapViewModel extends AndroidViewModel {
     public void createNewStudySpot(final String name, final String address, final String schedule){
         String apiKey = getApplication().getString(R.string.geocoding_api_key);
         mRepo.createNewStudySpot(name, address, schedule, apiKey, mStudySpots);
+        isConnected = mRepo.getConnectionStatus();
     }
 
     /*
@@ -102,6 +105,7 @@ public class MapViewModel extends AndroidViewModel {
             mStudySpots.setValue(spots);
         }
         mRepo.deleteStudySpot(spot);
+        isConnected = mRepo.getConnectionStatus();
     }
 
     public StudySpot findStudySpotByName(String name){
@@ -129,6 +133,8 @@ public class MapViewModel extends AndroidViewModel {
     public void updateDBSpotAverages(StudySpot spot, String ... fieldNames){
         if(fieldNames.length > 0 ){
             mRepo.updateDBSpotAverages(spot, fieldNames);
+            isConnected = mRepo.getConnectionStatus();
+
         }
     }
 
@@ -137,6 +143,8 @@ public class MapViewModel extends AndroidViewModel {
     public void updateDBSpotLight(StudySpot spot){
         updateDBSpotAverages(spot, new String[]{ StudySpot.KEY_AVG_LIGHT} );
         mRepo.saveLightRecord(spot);
+        isConnected = mRepo.getConnectionStatus();
+
     }
 
     /*Helper method to update the average noise and noise record for a spot in the database
@@ -144,10 +152,13 @@ public class MapViewModel extends AndroidViewModel {
     public void updateDBSpotNoise(StudySpot spot){
         updateDBSpotAverages(spot, new String[]{ StudySpot.KEY_AVG_NOISE} );
         mRepo.saveNoiseRecord(spot);
+        isConnected = mRepo.getConnectionStatus();
+
     }
 
     public void setAverageCurrentRatingFromReview(StudySpot spot){
         mRepo.retrieveReviews(spot, mStudySpots);
+        isConnected = mRepo.getConnectionStatus();
         Log.d(TAG, "setCurrentRatingFromReview() called by " + TAG);
     }
 

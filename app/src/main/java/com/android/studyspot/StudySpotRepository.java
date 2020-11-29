@@ -27,11 +27,9 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 
 /*
@@ -40,6 +38,7 @@ import java.util.Random;
  */
 public class StudySpotRepository {
     public static final String COLLECTION_STUDYSPOTS = "studyspots";
+    public static boolean connection_flag = false;
     public static final String COLLECTION_REVIEW = "reviews";
     //the document holding the noise records for a studyspot. there should only be one per spot
     public static final String DOCUMENT_LIGHT = "light_record/singlerecord";
@@ -55,8 +54,13 @@ public class StudySpotRepository {
      * The context should be the application context.
      */
     public StudySpotRepository(Context context) {
+        connection_flag = true;
         mDatabase = FirebaseFirestore.getInstance();
         mQueue = Volley.newRequestQueue(context);
+    }
+
+    public boolean getConnectionStatus(){
+        return connection_flag;
     }
 
     /*
@@ -70,6 +74,7 @@ public class StudySpotRepository {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
+                            connection_flag = true;
                             List<StudySpot> spotList = spotHolder.getValue();
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 StudySpot spot = new StudySpot();
@@ -112,6 +117,8 @@ public class StudySpotRepository {
                             spotHolder.setValue(spotList); //notify observers of data change
                             Log.d(TAG, "StudySpots retrieved");
                         } else {
+                            connection_flag = false;
+                            //send toast to user that database connection failed
                             Log.d(TAG, "Error retrieving StudySpots: ", task.getException());
                         }
                     }
@@ -134,6 +141,7 @@ public class StudySpotRepository {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
+                            connection_flag = true;
                             double average = 0;
                             int counter = 0;
                             for (QueryDocumentSnapshot document : task.getResult()) {
@@ -149,6 +157,7 @@ public class StudySpotRepository {
                             spot.setAvgRating(average_rating);
                             spotHolder.setValue(spotHolder.getValue());
                         } else {
+                            connection_flag = false;
                             Log.d(TAG, "Error getting reviews: ", task.getException());
                         }
                     }
@@ -174,6 +183,7 @@ public class StudySpotRepository {
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                         if (task.isSuccessful()) {
+                            connection_flag = true;
                             DocumentSnapshot document = task.getResult();
                             if (document.exists()) {
                                 Map<String, Double> noiseRecord = (Map<String, Double>)
@@ -187,6 +197,7 @@ public class StudySpotRepository {
 
                             spotHolder.setValue(spotHolder.getValue());
                         } else {
+                            connection_flag = false;
                             Log.d(TAG, "get failed with ", task.getException());
                         }
                     }
@@ -211,6 +222,7 @@ public class StudySpotRepository {
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                         if (task.isSuccessful()) {
+                            connection_flag = true;
                             DocumentSnapshot document = task.getResult();
                             if (document.exists()) {
                                 Map<String, Double> lightRecord = (Map<String, Double>)
@@ -224,6 +236,7 @@ public class StudySpotRepository {
                                 Log.d(TAG, "No such document");
                             }
                         } else {
+                            connection_flag = false;
                             Log.d(TAG, "get failed with ", task.getException());
                         }
                     }
@@ -250,8 +263,10 @@ public class StudySpotRepository {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
+                            connection_flag = true;
                             Log.d(TAG, "Spot was saved");
                         } else {
+                            connection_flag = false;
                             Log.d(TAG, "Spot failed to save", task.getException());
                         }
                     }
@@ -320,8 +335,10 @@ public class StudySpotRepository {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
+                            connection_flag = true;
                             Log.d(TAG, "LightRecord was saved");
                         } else {
+                            connection_flag = false;
                             Log.d(TAG, "LightRecord failed to save", task.getException());
                         }
                     }
@@ -355,8 +372,10 @@ public class StudySpotRepository {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
+                            connection_flag = true;
                             Log.d(TAG, "NoiseRecord was saved");
                         } else {
+                            connection_flag = false;
                             Log.d(TAG, "NoiseRecord failed to save", task.getException());
                         }
                     }
@@ -408,6 +427,7 @@ public class StudySpotRepository {
                 try {
                     String status = response.getString("status");
                     if (status != null && status.compareToIgnoreCase(GEOCODING_REQUEST_OK) == 0) {
+                        connection_flag = true;
                         JSONObject location = response.getJSONArray("results")
                                 .getJSONObject(0).getJSONObject("geometry")
                                 .getJSONObject("location");
@@ -418,8 +438,10 @@ public class StudySpotRepository {
                         spotHolder.setValue(spotHolder.getValue());
                         saveStudySpot(spot);
                     } else if (status != null) {
+                        connection_flag = false;
                         throw new Exception("Geocoding request result status was: " + status);
                     } else {
+                        connection_flag = false;
                         throw new Exception("Geocoding request result did not return status OK");
                     }
                 } catch (Exception e) {
@@ -447,6 +469,7 @@ public class StudySpotRepository {
                     @Override
 
                     public void onSuccess(Void aVoid) {
+                        connection_flag = true;
                         Log.d(TAG, "Spot deleted");
 
                     }
@@ -454,6 +477,7 @@ public class StudySpotRepository {
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
+                        connection_flag = false;
                         Log.w(TAG, "Error deleting spot", e);
                     }
                 });
@@ -492,8 +516,10 @@ public class StudySpotRepository {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()) {
+                        connection_flag = true;
                         Log.d(TAG, "Averages updated");
                     } else {
+                        connection_flag = false;
                         Log.d(TAG, "Averages failed to update", task.getException());
                     }
                 }

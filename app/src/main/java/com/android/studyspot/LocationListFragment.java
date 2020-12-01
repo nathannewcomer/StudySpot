@@ -70,11 +70,9 @@ public class LocationListFragment extends Fragment implements ListAdapter.ListIt
     private ListAdapter mAdapter;
     private MapViewModel viewModel;
 
-    private GoogleMap googleMap;
     private View root;
     private View details;
     private Marker marker;
-    private MapView mapView;
     private Button mLightMeasButton;
     private Button mNoiseMeasButton;
     private TextView mLightLevel;
@@ -137,12 +135,6 @@ public class LocationListFragment extends Fragment implements ListAdapter.ListIt
                 }
             });
             details.setVisibility(View.GONE);
-
-            //map initialize
-            mapView = root.findViewById(R.id.small_map_container);
-            mapView.onCreate(savedInstanceState);
-            mapView.onResume(); //force maps to start
-
 
             //code for list init
             RecyclerView rvList = (RecyclerView) root.findViewById(R.id.recycler_view);
@@ -334,22 +326,12 @@ public class LocationListFragment extends Fragment implements ListAdapter.ListIt
             mNoiseLevel.setText(String.format(getString(R.string.measured_average_noise),
                     selectedSpot.getAvgNoise()));
 
-            mapView.getMapAsync(new OnMapReadyCallback() {
+            mReview.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onMapReady(GoogleMap googleMap) {
-                    LatLng coords = new LatLng(selectedSpot.getCoords().getLatitude(), selectedSpot.getCoords().getLongitude());
-                    googleMap.clear();
-                    googleMap.addMarker(new MarkerOptions().title(selectedSpot.getName()).position(coords));
-
-                    //TODO add observer for individual study spot
-                    mReview.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Intent reviewIntent = new Intent(getActivity().getApplicationContext(), ReviewActivity.class);
-                            reviewIntent.putExtra(REVIEW_NAME, selectedSpot.getName());
-                            startActivityForResult(reviewIntent, REVIEW_REQUEST_CODE);
-                        }
-                    });
+                public void onClick(View view) {
+                    Intent reviewIntent = new Intent(getActivity().getApplicationContext(), ReviewActivity.class);
+                    reviewIntent.putExtra(REVIEW_NAME, selectedSpot.getName());
+                    startActivityForResult(reviewIntent, REVIEW_REQUEST_CODE);
                 }
             });
             details.setVisibility(View.VISIBLE);

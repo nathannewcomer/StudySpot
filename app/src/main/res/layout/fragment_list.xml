@@ -33,18 +33,6 @@
             android:layout_height="20dp"
             android:src="@drawable/ic_arrow_down"/>
 
-
-        <!--add google maps location to view-->
-        <com.google.android.gms.maps.MapView
-            android:id="@+id/small_map_container"
-            android:layout_width="match_parent"
-            android:layout_height="175dp"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            map:cameraZoom = "14"
-            map:cameraTargetLat = "39.9991379"
-            map:cameraTargetLng = "-83.01532619999999"/>
-
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content">

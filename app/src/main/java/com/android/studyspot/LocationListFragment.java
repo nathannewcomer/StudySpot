@@ -12,6 +12,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -35,6 +37,7 @@ import android.widget.Toast;
 import com.android.studyspot.models.Review;
 import com.android.studyspot.models.StudySpot;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationAvailability;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
@@ -43,7 +46,10 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 
 import java.util.List;
 
@@ -241,16 +247,24 @@ public class LocationListFragment extends Fragment implements ListAdapter.ListIt
             case R.id.loc_sort_distance:
                 if(ContextCompat.checkSelfPermission(requireContext(),PERM_FINE_LOC)
                         == PackageManager.PERMISSION_GRANTED) {
-                    mFusedLocationClient.getCurrentLocation(LocationRequest.PRIORITY_HIGH_ACCURACY,
-                            null)
-                            .addOnSuccessListener(new OnSuccessListener<Location>() {
-                        @Override
-                        public void onSuccess(Location location) {
-                            if(location != null){
-                                sortSpotsByDistance(location);
-                            }
-                        }
-                    });
+                    mFusedLocationClient
+                        .getLocationAvailability()
+                        .addOnCompleteListener(
+                                new OnCompleteListener<LocationAvailability>(){
+                                   @Override
+                                   public void onComplete(@NonNull Task<LocationAvailability> task) {
+                                        if(task.isSuccessful() && task.getResult() != null &&
+                                                task.getResult().isLocationAvailable()){
+                                            makeLocationRequest();
+                                        }
+                                        else{
+                                            Toast.makeText(requireContext(),
+                                                    R.string.location_request_failed,
+                                                    Toast.LENGTH_LONG).show();
+                                        }
+                                   }
+                               });
+
                 }
                 else{
                     requestPermissions(new String[]{ PERM_FINE_LOC},
@@ -302,6 +316,26 @@ public class LocationListFragment extends Fragment implements ListAdapter.ListIt
             viewModel.getSpots().setValue(spots);
             mAdapter.sortSpots(ListAdapter.SortOption.DISTANCE);
             mAdapter.notifyDataSetChanged();
+
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public void makeLocationRequest(){
+        if(ContextCompat.checkSelfPermission(requireContext(),PERM_FINE_LOC)
+                == PackageManager.PERMISSION_GRANTED) {
+            mFusedLocationClient.getCurrentLocation(LocationRequest.PRIORITY_HIGH_ACCURACY,
+                    null)
+                    .addOnCompleteListener(new OnCompleteListener<Location>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Location> task) {
+                            if (task.isSuccessful() && task.getResult() != null) {
+                                sortSpotsByDistance(task.getResult());
+                            } else {
+                                Toast.makeText(requireContext(), R.string.location_request_failed, Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
 
         }
     }
@@ -455,5 +489,7 @@ public class LocationListFragment extends Fragment implements ListAdapter.ListIt
         if(networkInfo != null){ return true; }
         else{return false;}
     }
+
+
 
 }

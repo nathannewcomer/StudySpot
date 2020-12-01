@@ -35,6 +35,8 @@ import android.widget.Toast;
 
 import com.android.studyspot.models.StudySpot;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationAvailability;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -42,7 +44,10 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 
 
 import java.util.ArrayList;
@@ -189,20 +194,25 @@ public class MapFragment extends Fragment{
             case R.id.filter_distance:
                 if (ContextCompat.checkSelfPermission(requireContext(),PERM_FINE_LOC)
                         == PackageManager.PERMISSION_GRANTED) {
-                    FusedLocationProviderClient fusedLocationClient = LocationServices.
+                    final FusedLocationProviderClient fusedLocationClient = LocationServices.
                             getFusedLocationProviderClient(getActivity());
-                    fusedLocationClient.getLastLocation()
-                            .addOnSuccessListener(new OnSuccessListener<Location>() {
-                                @Override
-                                public void onSuccess(Location location) {
-                                    // Got last known location. In some rare situations this can be null.
-                                    if (location != null) {
-                                        FilterDistanceDialog dDialog = new FilterDistanceDialog(viewModel.getSpots().getValue(), markers, location);
-                                        dDialog.show(getParentFragmentManager(), "filterDistance");
+                    fusedLocationClient
+                        .getLocationAvailability()
+                        .addOnCompleteListener(
+                                new OnCompleteListener<LocationAvailability>(){
+                                    @Override
+                                    public void onComplete(@NonNull Task<LocationAvailability> task) {
+                                        if(task.isSuccessful() && task.getResult() != null &&
+                                                task.getResult().isLocationAvailable()){
+                                            makeLocationRequest(fusedLocationClient);
+                                        }
+                                        else{
+                                            Toast.makeText(requireContext(),
+                                                    R.string.location_request_failed,
+                                                    Toast.LENGTH_LONG).show();
+                                        }
                                     }
-                                }
-                            });
-
+                                });
                 }
                 return true;
             case R.id.filter_rating:
@@ -222,6 +232,29 @@ public class MapFragment extends Fragment{
 
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public void makeLocationRequest(FusedLocationProviderClient fClient){
+        if(ContextCompat.checkSelfPermission(requireContext(),PERM_FINE_LOC)
+                == PackageManager.PERMISSION_GRANTED) {
+            fClient.getCurrentLocation(LocationRequest.PRIORITY_HIGH_ACCURACY,
+                null)
+                .addOnCompleteListener(new OnCompleteListener<Location>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Location> task) {
+                        if (task.isSuccessful() && task.getResult() != null) {
+                            FilterDistanceDialog dDialog =
+                                    new FilterDistanceDialog(viewModel.getSpots().getValue(),
+                                            markers, task.getResult());
+                            dDialog.show(getParentFragmentManager(), "filterDistance");
+                        } else {
+                            Toast.makeText(requireContext(), R.string.location_request_failed,
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
         }
     }
 
@@ -261,7 +294,8 @@ public class MapFragment extends Fragment{
     }
 
     public boolean connectionStatus(){
-        ConnectivityManager cm = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager cm = (ConnectivityManager) getContext().
+                getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = cm.getActiveNetworkInfo();
         if(networkInfo != null){ return true; }
         else{return false;}

@@ -50,5 +50,6 @@
     <string name="hello_blank_fragment">Hello Blank</string>
     <string name="failed_connection">Failed to load. Please Check your Internet Connection and Try Again.</string>
     <string name="database_connection_failed">Connection to database failed. Please try again.</string>
+    <string name = "location_request_failed">Unable to get your location. Please check GPS and internet settings</string>
 
 </resources>

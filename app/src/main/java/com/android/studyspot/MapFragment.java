@@ -111,7 +111,7 @@ public class MapFragment extends Fragment{
                     });
                     //if failed to retrieve spots from view model due to connection
                     if (!viewModel.isConnected) {
-                        Toast.makeText(getContext(), "Failed to load Study Spot. Please Try Again.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getContext(), getString(R.string.failed_connection), Toast.LENGTH_LONG).show();
                     }
                     googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                         @Override

@@ -336,7 +336,7 @@ public class LocationListFragment extends Fragment implements ListAdapter.ListIt
             });
             details.setVisibility(View.VISIBLE);
         }else {
-            Toast.makeText(getContext(), "Failed to Load Study Spot Details. Please Try Again.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), getString(R.string.failed_connection), Toast.LENGTH_SHORT).show();
         }
         Log.d(TAG, "onClick() called by" + TAG);
 

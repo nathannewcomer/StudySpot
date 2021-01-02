@@ -64,6 +64,7 @@ public class MapFragment extends Fragment{
     private DetailsFragment detailsFrag;
     private View root;
     private StudySpot selectedSpot;
+
     public MapFragment() {
         // Required empty public constructor
     }
@@ -267,6 +268,7 @@ public class MapFragment extends Fragment{
             LatLng coords = new LatLng(spot.getCoords().getLatitude(), spot.getCoords().getLongitude());
             markers.add(googleMap.addMarker(new MarkerOptions().title(spot.getName()).position(coords)));
         }
+
     }
 
     private void enableMyLocation() {

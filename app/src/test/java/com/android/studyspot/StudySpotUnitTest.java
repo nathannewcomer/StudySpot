@@ -15,7 +15,7 @@ public class StudySpotUnitTest {
     public void getDocumentName_isCorrect2(){
         StudySpot spot = new StudySpot();
         spot.setName("My/Test");
-        assertTrue(spot.getDocumentName().compareTo("MyTest") == 0);
+        assertTrue(spot.getDocumentName().compareTo("My_Test") == 0);
     }
 
     @Test

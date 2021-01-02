@@ -14,3 +14,15 @@
 /captures
 .externalNativeBuild
 .cxx
+/firebase.json
+/firestore.rules
+/firebase-debug.log
+/firestore.indexes.json
+/.firebaserc
+/firebase_testing
+/firestore-debug.log
+/ui-debug.log
+
+/rules_testing/firestore-debug.log
+/rules_testing/.vs/
+/rules_testing/node_modules/
